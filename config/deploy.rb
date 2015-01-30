@@ -5,7 +5,7 @@ set :application, 'a2b-api'
 set :repo_url, 'git@github.com:katiespiders/a2b.git'
 set :use_sudo, false
 
-set :deploy_to, 'var/www/a2b-api'
+set :deploy_to, '/var/www/a2b-api'
 
 # Default branch is :master
 # ask :branch, proc { `git rev-parse --abbrev-ref HEAD`.chomp }.call
@@ -38,6 +38,10 @@ set :deploy_to, 'var/www/a2b-api'
 # set :keep_releases, 5
 
 namespace :deploy do
+
+	desc "No ActiveRecord override"
+	task :migrate do
+	end
 
   after :restart, :clear_cache do
     on roles(:web), in: :groups, limit: 3, wait: 10 do
