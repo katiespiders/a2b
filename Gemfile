@@ -1,11 +1,24 @@
 source 'https://rubygems.org'
 
-
 gem 'rails', '4.1.8'
-
 gem 'rails-api'
+gem 'therubyracer', platforms: :ruby
 
-gem 'spring', :group => :development
+group :development do
+	gem 'capistrano', '~> 3.3.0'
+	gem 'capistrano-rvm'
+	gem 'capistrano-bundler'
+	gem 'capistrano-rails'
+	gem 'capistrano-passenger'
+
+	gem 'spring'
+	gem 'better_errors'
+	gem 'binding_of_caller'
+end
+
+group :development, :test do
+	gem 'rspec-rails'
+end
 
 
 
