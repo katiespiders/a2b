@@ -34,4 +34,5 @@ class ApplicationController < ActionController::API
 			# THIS URL WORKS FOR TRANSIT HOLY SHIT!
 			# DO *NOT* USE mode=TRANSIT OR IT WILL GO INSANE
 			# http://localhost:8080/otp/routers/default/plan?fromPlace=47.60886,-122.334395&toPlace=47.687107,-122.352936
+		end
 end
