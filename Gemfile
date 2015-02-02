@@ -3,6 +3,7 @@ source 'https://rubygems.org'
 gem 'rails', '4.1.8'
 gem 'rails-api'
 gem 'therubyracer', platforms: :ruby
+gem 'httparty'
 
 group :development do
 	gem 'capistrano', '~> 3.3.0'

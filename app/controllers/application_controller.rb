@@ -2,7 +2,7 @@ require 'httparty'
 
 class ApplicationController < ActionController::API
 	def index
-		render json: get_cars
+		render json: {"hi": "here i am"}
 	end
 
 	private

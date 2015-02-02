@@ -48,7 +48,7 @@ server '54.191.53.127',
 	user: 'ubuntu',
 	roles: %w{web app db},
 	ssh_options: {
-		keys: %w(/Users/Katie/.ssh/a2b-api.pem),
+		keys: %w(/Users/Katie/.ssh/moar-a2b-api.pem),
 		forward_agent: false,
 		auth_methods: %w(publickey)
 	}
