@@ -2,28 +2,29 @@ require 'httparty'
 
 class ApplicationController < ActionController::API
 	def index
-		render json: {"hi": "here i am"}
+		render json: get_buses
 	end
 
 	private
-	
+
 		def origin
 			{ latitude: 47.687165,
 				longitude: -122.352925 }
 		end
 
-		def destination 
+		def destination
 			{ latitude: 47.606968,
 				longitude: -122.305192 }
 		end
-		
+
 		def get_cars
 			url = "https://www.car2go.com/api/v2.1/vehicles?loc=seattle&oauth_consumer_key=#{ENV['CAR2GO_KEY']}&format=json"
 			HTTParty.get(url)
 		end
 
 		def get_buses
-			url = ""
+			url = "http://localhost:8080/otp/routers/default/plan?fromPlace=#{origin[:latitude]},#{origin[:longitude]}&toPlace=#{destination[:latitude]},#{destination[:longitude]}"
+			puts "*"*80, url
 			HTTParty.get(url)
 		end
 
