@@ -33,6 +33,7 @@ class ApplicationController < ActionController::API
 
 		def get_cars
 			url = "https://www.car2go.com/api/v2.1/vehicles?loc=seattle&oauth_consumer_key=#{ENV['CAR2GO_KEY']}&format=json"
+			url = "https://www.car2go.com/api/v2.1/vehicles?loc=seattle&oauth_consumer_key=#{ENV['CAR2GO_KEY']}&format=json"
 			HTTParty.get(url)
 		end
 
