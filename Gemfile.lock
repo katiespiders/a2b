@@ -69,6 +69,7 @@ GEM
       multi_xml (>= 0.5.2)
     i18n (0.7.0)
     json (1.8.2)
+    latitude (0.2.0)
     libv8 (3.16.14.7)
     mail (2.6.3)
       mime-types (>= 1.16, < 3)
@@ -166,6 +167,7 @@ DEPENDENCIES
   dotenv-rails
   geocoder
   httparty
+  latitude
   mongoid (~> 4.0.0)
   rails (= 4.1.8)
   rails-api

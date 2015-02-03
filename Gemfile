@@ -6,6 +6,7 @@ gem 'therubyracer', platforms: :ruby
 gem 'httparty'
 gem 'mongoid', '~> 4.0.0'
 gem 'geocoder'
+gem 'latitude'
 
 group :development do
 	gem 'capistrano', '~> 3.3.0'
