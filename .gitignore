@@ -13,7 +13,8 @@
 
 # Ignore all logfiles and tempfiles.
 /log/*.log
-# /tmp
+/tmp
 /kcm
 *.swp
 *~
+.env
