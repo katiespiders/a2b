@@ -4,6 +4,8 @@ gem 'rails', '4.1.8'
 gem 'rails-api'
 gem 'therubyracer', platforms: :ruby
 gem 'httparty'
+gem 'mongoid', '~> 4.0.0'
+gem 'geocoder'
 
 group :development do
 	gem 'capistrano', '~> 3.3.0'
@@ -19,6 +21,7 @@ end
 
 group :development, :test do
 	gem 'rspec-rails'
+	gem 'dotenv-rails'
 end
 
 
