@@ -1,20 +1,34 @@
 require 'httparty'
+require 'geocoder'
 
 class ApplicationController < ActionController::API
-	def index
-		render json: get_buses
+	def trip_options
+		render json: itineraries 
 	end
 
 	private
-
-		def origin
-			{ latitude: 47.687165,
-				longitude: -122.352925 }
+		def itineraries
+			origin = origin_coords
+			destination = destination_coords
+			buses = get_buses
+			from = buses['from']['name']
+			to = buses['to']['name']
+			itineraries = buses['itineraries']
+			trip = itineraries[0]
+			duration = show_duration(trip['duration'])
+			raise
+		end
+		
+		def origin_coords
+			origin = Geocoder.coordinates("352 N. 80th St, Seattle")
+			puts "!"*80, origin
+			origin
 		end
 
-		def destination
-			{ latitude: 47.606968,
-				longitude: -122.305192 }
+		def destination_coords
+			destination = Geocoder.coordinates("525 21st Ave, Seattle")
+			puts "@"*80, destination
+			destination
 		end
 
 		def get_cars
@@ -23,17 +37,16 @@ class ApplicationController < ActionController::API
 		end
 
 		def get_buses
-			url = "http://localhost:8080/otp/routers/default/plan?fromPlace=#{origin[:latitude]},#{origin[:longitude]}&toPlace=#{destination[:latitude]},#{destination[:longitude]}"
+			origin = origin_coords
+			destination = destination_coords
+			url = "http://localhost:8080/otp/routers/default/plan?fromPlace=#{origin[0]},#{origin[1]}&toPlace=#{destination[0]},#{destination[1]}"
 			puts "*"*80, url
-			HTTParty.get(url)
+			HTTParty.get(url)['plan']
 		end
 
-		def get_directions
-			# THIS URL WORKS (IF YOU WANT TO WALK)
-			# http://localhost:8080/otp/routers/default/plan?fromPlace=47.687165,-122.352925&toPlace=47.606968,-122.305192&mode=WALK
-			#
-			# THIS URL WORKS FOR TRANSIT HOLY SHIT!
-			# DO *NOT* USE mode=TRANSIT OR IT WILL GO INSANE
-			# http://localhost:8080/otp/routers/default/plan?fromPlace=47.60886,-122.334395&toPlace=47.687107,-122.352936
+		def show_duration(seconds)
+			hours = (seconds / 3600).floor
+			minutes = ((seconds % 3600) / 60).floor
+			hours > 0 ? "#{hours} hours and #{minutes} minutes" : "#{minutes} minutes"
 		end
 end
