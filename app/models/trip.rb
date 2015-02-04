@@ -51,7 +51,6 @@ class Trip
 					legs: directions(itin['legs'])
 				}
 			end
-			raise
 			return_array
 		end
 		
@@ -59,11 +58,20 @@ class Trip
 			dir_array = []
 			legs.each do |leg|
 				if leg['mode'] == 'WALK'
-					dir_array << StreetLeg.new(
+					l = StreetLeg.new(
 						mode: 'WALK', 
-						start_time: leg['startTime'], 
-						end_time: leg['endTime'])
-					# iterate over steps and add a bunch of turns
+						start_time: leg['startTime']/1000, 
+						end_time: leg['endTime']/1000)
+					leg['steps'].each do |step|
+						l.turns << Turn.new(
+							street: step['streetName'],
+							abs_direction: step['absoluteDirection'],
+							rel_direction: step['relativeDirection'],
+							distance: step['distance']
+							)
+					end
+					dir_array << l
+					
 				else
 					l = TransitLeg.new(
 						mode: leg['mode'], 
@@ -73,15 +81,14 @@ class Trip
 						express?: leg['tripShortName'] == 'EXPRESS')
 					l.stops << Stop.new(
 						name: leg['from']['name'],
-						id: leg['from']['stopId']['id'].to_i,
-						scheduled: leg['from']['departure'],
-						actual: leg['from']['departure'])
+						stop_id: leg['from']['stopId']['id'],
+						scheduled: leg['from']['departure']/1000,
+						actual: leg['from']['departure']/1000)
 					l.stops << Stop.new(
 						name: leg['to']['name'],
-						id: leg['to']['stopId']['id'].to_i,
-						scheduled: leg['to']['arrival'],
-						actual: leg['to']['arrival'])
-					raise
+						stop_id: leg['to']['stopId']['id'],
+						scheduled: leg['to']['arrival']/1000,
+						actual: leg['to']['arrival']/1000)
 					dir_array << l
 				end
 			end

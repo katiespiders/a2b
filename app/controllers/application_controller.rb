@@ -29,15 +29,13 @@ class ApplicationController < ActionController::API
 		end
 		
 		def origin_coords
-			o=Geocoder.coordinates("352 N. 80th St, Seattle")
-			puts "!"*80, o
-			o
+			# Geocoder.coordinates("352 N. 80th St, Seattle")
+			[47.687161, -122.352952]
 		end
 
 		def destination_coords
-			d=Geocoder.coordinates("525 21st Ave, Seattle")
-			puts "@"*80, d
-			d
+			# Geocoder.coordinates("525 21st Ave, Seattle")
+			[47.6069542, -122.3052976]
 		end
 
 		def get_cars
