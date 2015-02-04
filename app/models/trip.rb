@@ -29,15 +29,15 @@ class Trip
       when 'TRANSIT'
         transit_routes(otp_routes)
       when 'CAR'
-        car_routes(cars_nearby)
+        car_hash(cars_nearby[0]) 
       when 'WALK'
       end
     end
 
     # TRANSIT
 		def transit_routes(plan)
-			{ from: plan['from']['name'], # start location according to OTP
-		 		to: plan['to']['name'], # end location according to OTP
+			{ from:        plan['from']['name'], # start location according to OTP
+		 		to:          plan['to']['name'], # end location according to OTP
 				itineraries: transit_itineraries(plan['itineraries']) }
 		end
 
@@ -48,43 +48,39 @@ class Trip
 		end
 
 		def transit_itin_hash(itin)
-			{	start_time: itin['startTime'],
-				end_time: itin['endTime'],
-				walk_time: itin['walkTime'],
-				transit_time: itin['transitTime'],
-				wait_time: itin['wait_time'],
-				walk_distance: itin['walk_distance'],
-				xfers: itin['transfers'],
-				fare: itin['fare']['fare']['regular']['cents'],
-				directions: directions(itin['legs']) }
+			{	start_time:     itin['startTime'],
+				end_time:       itin['endTime'],
+				walk_time:      itin['walkTime'],
+				transit_time:   itin['transitTime'],
+				wait_time:      itin['wait_time'],
+				walk_distance:  itin['walk_distance'],
+				xfers:          itin['transfers'],
+				fare:           itin['fare']['fare']['regular']['cents'],
+				directions:     directions(itin['legs']) }
 		end
 
 		### CARS
-		def car_routes(cars)
-			cars_array = []
-			cars.each { |car|	cars_array << car_hash(car) }
-			cars_array
-		end
-
     def car_hash(car)
-      { address: car['address'],
-        coordinates: coords(car),
-        exterior: car['exterior'] == 'GOOD',
-        interior: car['interior'] == 'GOOD',
-        gas: car['fuel'],
-        name: car['name'],
-        directions: car_directions(coords(car)) }
+      { address:      car['address'],
+        coordinates:  coords(car),
+        exterior:     car['exterior'] == 'GOOD',
+        interior:     car['interior'] == 'GOOD',
+        gas:          car['fuel'],
+        name:         car['name'],
+        directions:   car_directions(coords(car)) }
       end
 
 		def car_directions(coordinates)
 			walk = otp_routes('WALK', @origin, coordinates) # origin to car location
 		  drive = otp_routes('CAR', coordinates, @destination) #car location to destination
 
+      return nil unless walk && drive # hack for OTP API bug
+
       walk_directions = directions(walk['itineraries'][0]['legs'])
       drive_directions = directions(drive['itineraries'][0]['legs'])
 
-      { from: walk['from']['name'],
-        to:   drive['to']['name'],
+      { from:       walk['from']['name'],
+        to:         drive['to']['name'],
         directions: [walk_directions[0], drive_directions[0]] }
 		end
 
@@ -128,8 +124,9 @@ class Trip
       when 'CAR'  # second leg of car2go trip
         url += "#{origin}&toPlace=#{@destination.join(',')}&mode=CAR"
       end
-
-      HTTParty.get(url)['plan']
+      p=HTTParty.get(url)['plan']
+      puts "!"*80, "url: #{url}", "@"*80, "plan: #{p}", "#"*80
+      p
     end
 
 		def directions(legs) # array of trip legs, e.g. [walk, car] or [walk, bus, bus, walk]
