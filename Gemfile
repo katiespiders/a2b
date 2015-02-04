@@ -23,9 +23,14 @@ end
 group :development, :test do
 	gem 'rspec-rails', '~> 3.1.0'
 	gem 'dotenv-rails', '~> 1.0.2'
-	gem 'factory_girl_rails', '~> 4.5.0'
-	gem 'webmock', '~> 1.20.4'
+	gem 'simplecov', '~> 0.9.0'
+	gem 'typhoeus', '~> 0.7.1'
+	gem 'vcr', '~> 2.9.3'
 end
+
+
+
+
 
 
 
