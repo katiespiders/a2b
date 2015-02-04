@@ -19,17 +19,21 @@ class Trip
 		@routes = set_routes
 	end
 
-	def set_routes
-		case @mode
-		when 'TRANSIT'
-			transit_routes(otp_routes)
-		when 'CAR'
-			car_routes(cars_nearby)
-		when 'WALK'
-		end
-	end
+  def routes
+    @routes
+  end
 
 	private
+    def set_routes
+      case @mode
+      when 'TRANSIT'
+        transit_routes(otp_routes)
+      when 'CAR'
+        car_routes(cars_nearby)
+      when 'WALK'
+      end
+    end
+
     # TRANSIT
 		def transit_routes(plan)
 			{ from: plan['from']['name'], # start location according to OTP
@@ -62,7 +66,7 @@ class Trip
 			cars_array
 		end
 
-    def car_itin_hash(car)
+    def car_hash(car)
       { address: car['address'],
         coordinates: coords(car),
         exterior: car['exterior'] == 'GOOD',
