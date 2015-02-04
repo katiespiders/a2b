@@ -3,36 +3,44 @@ require 'geocoder'
 
 class ApplicationController < ActionController::API
 	def trip_options
-		render json: itineraries 
+		trip = Trip.new('TRANSIT', origin_coords, destination_coords)
+		routes = trip.routes
+		render json: routes 
 	end
 
 	private
 		def itineraries
-			origin = origin_coords
-			destination = destination_coords
 			buses = get_buses
 			from = buses['from']['name']
 			to = buses['to']['name']
 			itineraries = buses['itineraries']
 			trip = itineraries[0]
 			duration = show_duration(trip['duration'])
-			raise
+
+			{	origin: origin_coords,
+				destination: destination_coords,
+				buses: buses,
+				from: from,
+				to: to,
+				itineraries: itineraries,
+				trip: trip,
+				duration: duration
+			}
 		end
 		
 		def origin_coords
-			origin = Geocoder.coordinates("352 N. 80th St, Seattle")
-			puts "!"*80, origin
-			origin
+			o=Geocoder.coordinates("352 N. 80th St, Seattle")
+			puts "!"*80, o
+			o
 		end
 
 		def destination_coords
-			destination = Geocoder.coordinates("525 21st Ave, Seattle")
-			puts "@"*80, destination
-			destination
+			d=Geocoder.coordinates("525 21st Ave, Seattle")
+			puts "@"*80, d
+			d
 		end
 
 		def get_cars
-			url = "https://www.car2go.com/api/v2.1/vehicles?loc=seattle&oauth_consumer_key=#{ENV['CAR2GO_KEY']}&format=json"
 			url = "https://www.car2go.com/api/v2.1/vehicles?loc=seattle&oauth_consumer_key=#{ENV['CAR2GO_KEY']}&format=json"
 			HTTParty.get(url)
 		end
