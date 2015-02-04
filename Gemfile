@@ -1,29 +1,30 @@
 source 'https://rubygems.org'
 
-gem 'rails', '4.1.8'
-gem 'rails-api'
-gem 'therubyracer', platforms: :ruby
-gem 'httparty'
+gem 'rails', '~> 4.1.8'
+gem 'rails-api', '~> 0.4.0'
+gem 'therubyracer', '~> 0.12.1', platforms: :ruby
+gem 'httparty', '~> 0.13.3'
 gem 'mongoid', '~> 4.0.0'
-gem 'geocoder'
-gem 'latitude'
+gem 'geocoder', '~> 1.2.7'
+gem 'latitude', '~> 0.2.0'
 
 group :development do
 	gem 'capistrano', '~> 3.3.0'
-	gem 'capistrano-rvm'
-	gem 'capistrano-bundler'
-	gem 'capistrano-rails'
-	gem 'capistrano-passenger'
+	gem 'capistrano-rvm', '~> 0.1.2'
+	gem 'capistrano-bundler', '~> 1.1.4'
+	gem 'capistrano-rails', '~> 1.1.2'
+	gem 'capistrano-passenger', '~> 0.0.1'
 
-	gem 'spring'
-	gem 'better_errors'
-	gem 'binding_of_caller'
+	gem 'spring', '~> 1.2.0'
+	gem 'better_errors', '~> 2.1.1'
+	gem 'binding_of_caller', '~> 0.7.2'
 end
 
 group :development, :test do
-	gem 'rspec-rails'
-	gem 'dotenv-rails'
-	gem 'factory_girl_rails'
+	gem 'rspec-rails', '~> 3.1.0'
+	gem 'dotenv-rails', '~> 1.0.2'
+	gem 'factory_girl_rails', '~> 4.5.0'
+	gem 'webmock', '~> 1.20.4'
 end
 
 
