@@ -16,155 +16,160 @@ class Trip
 		@mode = mode
 		@origin = origin
 		@destination = destination
-		set_routes
+		@routes = set_routes
 	end
 
 	def set_routes
 		case @mode
 		when 'TRANSIT'
-			@routes = transit_routes(routes)
+			transit_routes(otp_routes)
 		when 'CAR'
-			@routes = car_routes(cars_available)
+			car_routes(cars_nearby)
 		when 'WALK'
 		end
 	end
 
 	private
+    # TRANSIT
 		def transit_routes(plan)
-			{ from: plan['from']['name'],
-		 		to: plan['to']['name'],
-				itineraries: transit_itineraries(plan['itineraries'])
-			}
+			{ from: plan['from']['name'], # start location according to OTP
+		 		to: plan['to']['name'], # end location according to OTP
+				itineraries: transit_itineraries(plan['itineraries']) }
 		end
 
-		def transit_itineraries(itin_array)
-			return_array = []
-			itin_array.each do |itin|
-				return_array << {
-					start_time: itin['startTime'],
-					end_time: itin['endTime'],
-					walk_time: itin['walkTime'],
-					transit_time: itin['transitTime'],
-					wait_time: itin['wait_time'],
-					walk_distance: itin['walk_distance'],
-					xfers: itin['transfers'],
-					fare: itin['fare']['fare']['regular']['cents'],
-					legs: directions(itin['legs'])
-				}
-			end
-			return_array
+		def transit_itineraries(itin_array) # all itineraries returned by OTP
+			transit_trip_array = []
+			itin_array.each { |itin| transit_trip_array << transit_itin_hash(itin) }
+			transit_trip_array
 		end
-		
-		def directions(legs)
+
+		def transit_itin_hash(itin)
+			{	start_time: itin['startTime'],
+				end_time: itin['endTime'],
+				walk_time: itin['walkTime'],
+				transit_time: itin['transitTime'],
+				wait_time: itin['wait_time'],
+				walk_distance: itin['walk_distance'],
+				xfers: itin['transfers'],
+				fare: itin['fare']['fare']['regular']['cents'],
+				directions: directions(itin['legs']) }
+		end
+
+		### CARS
+		def car_routes(cars)
+			cars_array = []
+			cars.each { |car|	cars_array << car_hash(car) }
+			cars_array
+		end
+
+    def car_itin_hash(car)
+      { address: car['address'],
+        coordinates: coords(car),
+        exterior: car['exterior'] == 'GOOD',
+        interior: car['interior'] == 'GOOD',
+        gas: car['fuel'],
+        name: car['name'],
+        directions: car_directions(coords(car)) }
+      end
+
+		def car_directions(coordinates)
+			walk = otp_routes('WALK', @origin, coordinates) # origin to car location
+		  drive = otp_routes('CAR', coordinates, @destination) #car location to destination
+
+      walk_directions = directions(walk['itineraries'][0]['legs'])
+      drive_directions = directions(drive['itineraries'][0]['legs'])
+
+      { from: walk['from']['name'],
+        to:   drive['to']['name'],
+        directions: [walk_directions[0], drive_directions[0]] }
+		end
+
+		def cars_nearby
+			cars_nearby = []
+			cars_available.each do |car|
+				car[:distance] = distance(coords(car))
+				cars_nearby << car if car[:distance] < 1.6
+			end
+			cars_nearby.sort_by { |car| car[:distance]}
+		end
+
+		def cars_available
+			HTTParty.get(cars_url)['placemarks']
+		end
+
+		def cars_url
+			"https://www.car2go.com/api/v2.1/vehicles?loc=seattle&oauth_consumer_key=#{ENV['CAR2GO_KEY']}&format=json"
+		end
+
+		def coords(car)
+			[car['coordinates'][1], car['coordinates'][0]]
+		end
+
+		def distance(coords) # in kilometers
+			Latitude.great_circle_distance(@origin[0], @origin[1], coords[0], coords[1])
+		end
+
+		# OTP
+    def otp_routes(mode=@mode, origin=@origin, destination=@destination)
+      origin = origin.join(',')
+      destination = destination.join(',')
+      url = Rails.env.development? ? "http://localhost:8080/" : "http://api.seattle-a2b.com/"
+      url += "otp/routers/default/plan?fromPlace="
+
+      case mode
+      when 'TRANSIT'
+        url += "#{origin}&toPlace=#{destination}"
+      when 'WALK' # either entire trip or first leg of car2go trip
+        url += "#{@origin.join(',')}&toPlace=#{destination}&mode=WALK"
+      when 'CAR'  # second leg of car2go trip
+        url += "#{origin}&toPlace=#{@destination.join(',')}&mode=CAR"
+      end
+
+      HTTParty.get(url)['plan']
+    end
+
+		def directions(legs) # array of trip legs, e.g. [walk, car] or [walk, bus, bus, walk]
 			dir_array = []
 			legs.each do |leg|
-				if leg['mode'] == 'WALK'
-					l = StreetLeg.new(
-						mode: 'WALK', 
-						start_time: leg['startTime']/1000, 
-						end_time: leg['endTime']/1000)
-					leg['steps'].each do |step|
-						l.turns << Turn.new(
-							street: step['streetName'],
-							abs_direction: step['absoluteDirection'],
-							rel_direction: step['relativeDirection'],
-							distance: step['distance']
-							)
-					end
+				if leg['mode'] == 'WALK' || leg['mode'] == 'CAR'
+					l = StreetLeg.new(street_hash(leg))
+					leg['steps'].each { |step| l.turns << Turn.new(turn_hash(step)) }
 					dir_array << l
-					
 				else
-					l = TransitLeg.new(
-						mode: leg['mode'], 
-						route: leg['route'], 
-						headsign: leg['headsign'], 
-						continuation?: leg['interlineWithPreviousLeg'],
-						express?: leg['tripShortName'] == 'EXPRESS')
-					l.stops << Stop.new(
-						name: leg['from']['name'],
-						stop_id: leg['from']['stopId']['id'],
-						scheduled: leg['from']['departure']/1000,
-						actual: leg['from']['departure']/1000)
-					l.stops << Stop.new(
-						name: leg['to']['name'],
-						stop_id: leg['to']['stopId']['id'],
-						scheduled: leg['to']['arrival']/1000,
-						actual: leg['to']['arrival']/1000)
+					l = TransitLeg.new(transit_hash(leg))
+					l.stops << Stop.new(stop_hash(leg, 'from')) # get on bus at
+					l.stops << Stop.new(stop_hash(leg, 'to')) # get off bus at
 					dir_array << l
 				end
 			end
 			dir_array
 		end
 
-		def routes(mode=@mode, origin=@origin, destination=@destination)
-			origin = origin.join(',')
-			destination = destination.join(',')
-			url = Rails.env.development? ? "http://localhost:8080/" : "http://api.seattle-a2b.com/"
-			url += "otp/routers/default/plan?fromPlace="
+    def street_hash(leg)
+      { mode: leg['mode'],
+        start_time: leg['startTime']/1000,
+        end_time: leg['endTime']/1000 }
+      end
 
-			case mode
-			when 'TRANSIT'
-				url += "#{origin}&toPlace=#{destination}"
-			when 'CAR'
-				url += "#{origin}&toPlace=#{@destination.join(',')}"
-			when 'WALK'
-				url += "#{@origin.join(',')}&toPlace=#{destination}"	
-			end
+    def turn_hash(step)
+      { street: step['streetName'],
+        abs_direction: step['absoluteDirection'],
+        rel_direction: step['relativeDirection'],
+        distance: step['distance'] }
+    end
 
-			HTTParty.get(url)['plan']
-		end	
+    def transit_hash(leg)
+      { mode: leg['mode'],
+        route: leg['route'],
+        headsign: leg['headsign'],
+        continuation?: leg['interlineWithPreviousLeg'],
+        express?: leg['tripShortName'] == 'EXPRESS' }
+    end
 
-		### CARS 
-
-		def car_routes(cars)
-			return_array = []
-			cars.each do |car|
-				coordinates = car_coords(car)
-				return_array << {
-					address: car['address'],
-					coordinates: coordinates,
-					exterior: car['exterior'] == 'GOOD',
-					interior: car['interior'] == 'GOOD',
-					gas: car['fuel'],
-					name: car['name'],
-					itinerary: car_itinerary(coordinates)
-					}
-			end
-			return_array
-		end
-
-		# this is not going to work, but you know what I mean
-		def car_itinerary(coordinates)
-			{
-				walk: HTTParty.get(routes_url('WALK', @origin, coordinates)),
-		 		drive: HTTParty.get(routes_url('CAR'), coordinates, @destination)
-			}
-		end
-
-		def cars
-			cars_nearby = []
-			cars_available.each do |car|
-				car_coords = car_coords(car) # wtf is this line doing?
-				car[:distance] = distance(car)
-				cars_nearby << car if car[:distance] < 1.6
-			end
-			cars_nearby.sort_by { |car| car[:distance]}
-		end
-	
-		def cars_available
-			HTTParty.get(cars_url)['placemarks']
-		end
-		
-		def cars_url
-			"https://www.car2go.com/api/v2.1/vehicles?loc=seattle&oauth_consumer_key=#{ENV['CAR2GO_KEY']}&format=json"
-		end
-
-		def car_coords(car)
-			[car['coordinates'][1], car['coordinates'][0]]
-		end
-
-		def distance(car) # in kilometers
-			coords = car_coords(car)
-			Latitude.great_circle_distance(@origin[0], @origin[1], coords[0], coords[1])
-		end
+    def stop_hash(leg, to_from)
+      { name: leg[to_from]['name'],
+        stop_id: leg[to_from]['stopId']['id'],
+        scheduled: leg[to_from]['departure']/1000,
+        actual: leg[to_from]['departure']/1000 }
+    end
 end
