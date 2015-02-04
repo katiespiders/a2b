@@ -3,7 +3,7 @@ require 'geocoder'
 
 class ApplicationController < ActionController::API
 	def trip_options
-		trip = Trip.new('TRANSIT', origin_coords, destination_coords)
+		trip = Trip.new('CAR', origin_coords, destination_coords)
 		routes = trip.routes
 		render json: routes 
 	end

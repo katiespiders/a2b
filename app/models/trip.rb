@@ -16,14 +16,15 @@ class Trip
 		@mode = mode
 		@origin = origin
 		@destination = destination
-		routes
+		set_routes
 	end
 
-	def routes
+	def set_routes
 		case @mode
 		when 'TRANSIT'
-			@routes = transit_routes(HTTParty.get(routes_url)['plan'])
+			@routes = transit_routes(routes)
 		when 'CAR'
+			@routes = car_routes(cars_available)
 		when 'WALK'
 		end
 	end
@@ -95,20 +96,55 @@ class Trip
 			dir_array
 		end
 
-		def routes_url
-			origin = @origin.join(',')
-			destination = @destination.join(',')
-			site = Rails.env.development? ? "http://localhost:8080/" : "http://api.seattle-a2b.com/"
-			url = site + "otp/routers/default/plan?fromPlace=#{origin}&toPlace=#{destination}"
+		def routes(mode=@mode, origin=@origin, destination=@destination)
+			origin = origin.join(',')
+			destination = destination.join(',')
+			url = Rails.env.development? ? "http://localhost:8080/" : "http://api.seattle-a2b.com/"
+			url += "otp/routers/default/plan?fromPlace="
 
-			@mode == 'TRANSIT' ? url : url + "&mode=#{@mode}"
+			case mode
+			when 'TRANSIT'
+				url += "#{origin}&toPlace=#{destination}"
+			when 'CAR'
+				url += "#{origin}&toPlace=#{@destination.join(',')}"
+			when 'WALK'
+				url += "#{@origin.join(',')}&toPlace=#{destination}"	
+			end
+
+			HTTParty.get(url)['plan']
 		end	
 
 		### CARS 
+
+		def car_routes(cars)
+			return_array = []
+			cars.each do |car|
+				coordinates = car_coords(car)
+				return_array << {
+					address: car['address'],
+					coordinates: coordinates,
+					exterior: car['exterior'] == 'GOOD',
+					interior: car['interior'] == 'GOOD',
+					gas: car['fuel'],
+					name: car['name'],
+					itinerary: car_itinerary(coordinates)
+					}
+			end
+			return_array
+		end
+
+		# this is not going to work, but you know what I mean
+		def car_itinerary(coordinates)
+			{
+				walk: HTTParty.get(routes_url('WALK', @origin, coordinates)),
+		 		drive: HTTParty.get(routes_url('CAR'), coordinates, @destination)
+			}
+		end
+
 		def cars
 			cars_nearby = []
 			cars_available.each do |car|
-				car_coords = car_coords(car) 
+				car_coords = car_coords(car) # wtf is this line doing?
 				car[:distance] = distance(car)
 				cars_nearby << car if car[:distance] < 1.6
 			end
