@@ -1,5 +1,6 @@
 require 'httparty'
 require 'geocoder'
+require 'json'
 
 class ApplicationController < ActionController::API
 	def trip_options
@@ -7,7 +8,7 @@ class ApplicationController < ActionController::API
 		walk_trip = Trip.new('WALK', origin_coords, destination_coords)
 		transit_trip = Trip.new('TRANSIT', origin_coords, destination_coords)
 		routes = { car: car_trip.routes, walk: walk_trip.routes, transit: transit_trip.routes }
-		render json: routes
+		render json: routes.to_json
 	end
 
 	private
