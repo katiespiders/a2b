@@ -29,12 +29,12 @@ class Trip
       when 'TRANSIT'
         transit_routes(otp_routes)
       when 'CAR'
-        car_hash(cars_nearby[0]) 
+        car_hash(cars_nearby[0])
       when 'WALK'
       end
     end
 
-    # TRANSIT
+    ### TRANSIT
 		def transit_routes(plan)
 			{ from:        plan['from']['name'], # start location according to OTP
 		 		to:          plan['to']['name'], # end location according to OTP
@@ -109,7 +109,7 @@ class Trip
 			Latitude.great_circle_distance(@origin[0], @origin[1], coords[0], coords[1])
 		end
 
-		# OTP
+		### OTP
     def otp_routes(mode=@mode, origin=@origin, destination=@destination)
       origin = origin.join(',')
       destination = destination.join(',')
