@@ -20,6 +20,10 @@ RSpec.describe Trip, :type => :model do
         expect(routes[:from]).to eq "North 80th Street"
         expect(routes[:to]).to eq "21st Avenue"
         expect(routes[:itineraries].length).to eq 3
+				directions = routes[:itineraries][0][:directions]
+				expect(directions[0]).to be_instance_of StreetLeg
+				expect(directions[1]).to be_instance_of TransitLeg
+				expect(directions[2]).to be_instance_of StreetLeg
       end
     end
   end
