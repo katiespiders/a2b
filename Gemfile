@@ -20,12 +20,15 @@ group :development do
 	gem 'binding_of_caller', '~> 0.7.2'
 end
 
+group :test do
+	gem 'simplecov', '~> 0.9.0'
+	gem 'webmock', '~> 1.20.4'
+	gem 'vcr', '~> 2.9.3'
+end
+
 group :development, :test do
 	gem 'rspec-rails', '~> 3.1.0'
 	gem 'dotenv-rails', '~> 1.0.2'
-	gem 'simplecov', '~> 0.9.0'
-	gem 'typhoeus', '~> 0.7.1'
-	gem 'vcr', '~> 2.9.3'
 end
 
 
