@@ -29,7 +29,7 @@ class Trip
       when 'TRANSIT'
         transit_routes(otp_routes)
       when 'CAR'
-        car_hash(cars_nearby[0])
+        car_route(cars_nearby[0])
       when 'WALK'
       end
     end
@@ -60,17 +60,17 @@ class Trip
 		end
 
 		### CARS
-    def car_hash(car)
+    def car_route(car)
       { address:      car['address'],
         coordinates:  coords(car),
         exterior:     car['exterior'] == 'GOOD',
         interior:     car['interior'] == 'GOOD',
         gas:          car['fuel'],
         name:         car['name'],
-        directions:   car_directions(coords(car)) }
+        itinerary:    car_itinerary(coords(car)) }
       end
 
-		def car_directions(coordinates)
+		def car_itinerary(coordinates)
 			walk = otp_routes('WALK', @origin, coordinates) # origin to car location
 		  drive = otp_routes('CAR', coordinates, @destination) #car location to destination
 
@@ -124,9 +124,7 @@ class Trip
       when 'CAR'  # second leg of car2go trip
         url += "#{origin}&toPlace=#{@destination.join(',')}&mode=CAR"
       end
-      p=HTTParty.get(url)['plan']
-      puts "!"*80, "url: #{url}", "@"*80, "plan: #{p}", "#"*80
-      p
+      HTTParty.get(url)['plan']
     end
 
 		def directions(legs) # array of trip legs, e.g. [walk, car] or [walk, bus, bus, walk]
