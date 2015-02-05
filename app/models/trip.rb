@@ -113,7 +113,7 @@ class Trip
     def otp_routes(mode=@mode, origin=@origin, destination=@destination)
       origin = origin.join(',')
       destination = destination.join(',')
-      url = Rails.env.development? ? "http://localhost:8080/" : "http://api.seattle-a2b.com/"
+      url = Rails.env.production? ? "http://api.seattle-a2b.com/" : "http://localhost:8080/"
       url += "otp/routers/default/plan?fromPlace="
 
       case mode
