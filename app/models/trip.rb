@@ -16,52 +16,20 @@ class Trip
 		@mode = mode
 		@origin = origin
 		@destination = destination
-		@routes = set_routes
 	end
 
   def routes
-    @routes
-  end
+		case @mode
+		when 'TRANSIT'
+			TransitTrip.new(otp_routes)
+		when 'CAR'
+			car_route(cars_nearby[0])	
+		when 'WALK'
+			WalkTrip.new(otp_routes)
+		end
+	end
 
 	private
-    def set_routes
-      case @mode
-      when 'TRANSIT'
-        transit_routes
-      when 'CAR'
-        car_route(cars_nearby[0])
-      when 'WALK'
-				walk_route
-      end
-    end
-
-    ### TRANSIT
-		def transit_routes
-			plan = otp_routes
-			{ from:        plan['from']['name'], # start location according to OTP
-		 		to:          plan['to']['name'], # end location according to OTP
-				itineraries: transit_itineraries(plan['itineraries']) }
-		end
-
-		def transit_itineraries(itin_array) # all itineraries returned by OTP
-			transit_trip_array = []
-			itin_array.each { |itin| transit_trip_array << transit_itin_hash(itin) }
-			transit_trip_array
-		end
-
-		def transit_itin_hash(itin)
-			{	start_time:     itin['startTime'],
-				end_time:       itin['endTime'],
-				walk_time:      itin['walkTime'],
-				transit_time:   itin['transitTime'],
-				wait_time:      itin['wait_time'],
-				walk_distance:  itin['walk_distance'],
-				xfers:          itin['transfers'],
-				fare:           itin['fare']['fare']['regular']['cents'],
-				directions:     directions(itin['legs']) }
-		end
-
-		### CARS
     def car_route(car)
       { address:      car['address'],
         coordinates:  coords(car),
@@ -113,7 +81,7 @@ class Trip
 
 		def walk_route
 			walk = otp_routes
-			return nil unless walk
+			return nil unless walk # workaround for OTP API bug
 
 			walk_directions = directions(walk['itineraries'][0]['legs'])
 
