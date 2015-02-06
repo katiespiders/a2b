@@ -9,7 +9,7 @@ class Itinerary < Trip
     @wait_time =      itin['wait_time']
     @walk_distance =  itin['walk_distance']
     @xfers =          itin['transfers']
-    @fare =           itin['fare']['fare']['regular']['cents']
+    @fare =           itin['fare']['fare']['regular']['cents'] if itin['fare']
     @route =          directions(itin['legs'])
   end
 end

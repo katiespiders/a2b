@@ -18,7 +18,8 @@ class ApplicationController < ActionController::API
 	private
 		def origin_coords
 			# Geocoder.coordinates("352 N. 80th St, Seattle")
-			[47.687161, -122.352952]
+			[47.608830, -122.334411]
+			# [47.687161, -122.352952]
 		end
 
 		def destination_coords
