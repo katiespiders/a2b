@@ -9,13 +9,13 @@ class Turn
 
   def to_s
     directions = if @rel_direction == 'DEPART'
-      "Go #@abs_direction} on #@street} "
+      "Go #{@abs_direction} on #{@street} "
     elsif @rel_direction == 'CONTINUE'
-      "Continue #@abs_direction} on #@street} "
+      "Continue #{@abs_direction} on #{@street} "
     else
-      "Turn #@rel_direction.gsub('_', ' ')} to go #@abs_direction} on #@street} "
+      "Turn #{@rel_direction.gsub('_', ' ')} to go #{@abs_direction} on #{@street} "
     end
 
-    directions +  "for #@distance} of some unit"
+    directions +  "for #{@distance} of some unit"
   end
 end

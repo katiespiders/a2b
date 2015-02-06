@@ -10,6 +10,6 @@ class TransitLeg
   end
 
   def to_s
-    "Catch the #@route} #@mode.downcase} #@headsign} at #@stops[0]}. Get off at #@stops[1]}."
+    "Catch the #{@route} #{@mode.downcase} #{@headsign} at #{@stops[0]}. Get off at #{@stops[1]}."
   end
 end

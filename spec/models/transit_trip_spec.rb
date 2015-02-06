@@ -26,7 +26,7 @@ RSpec.describe TransitTrip, :type => :model do
     end
 
     it 'returns an array of walking/bus/walking directions' do
-      directions = @routes[:itineraries][0][:directions]
+      directions = @routes[:itineraries][0].route
       expect(directions[0]).to be_instance_of StreetLeg
       expect(directions[1]).to be_instance_of TransitLeg
       expect(directions[2]).to be_instance_of StreetLeg

@@ -26,7 +26,7 @@ class CarTrip < Trip
         car[:distance] = distance(coords(car))
         cars_nearby << car if car[:distance] < 1.6
       end
-      cars_nearby.sort_by { |car| car[:distance]}
+      cars_nearby.sort_by { |car| car[:distance] }
     end
 
     def cars_available
@@ -46,7 +46,8 @@ class CarTrip < Trip
   		walk_directions = directions(walk['itineraries'][0]['legs'])
   		drive_directions = directions(drive['itineraries'][0]['legs'])
 
-  		{ from:       walk['from']['name'],
+  		{
+        from:       walk['from']['name'],
   			to:         drive['to']['name'],
   			directions: [walk_directions[0], drive_directions[0]]
       }

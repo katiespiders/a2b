@@ -8,6 +8,6 @@ class Stop
   end
 
   def to_s
-    "#@name} at #Time.at(@scheduled/1000).strftime("%H:%M")}"
+    "#{@name} at #{Time.at(@scheduled/1000).strftime("%H:%M")}"
   end
 end

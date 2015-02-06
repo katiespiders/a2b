@@ -11,10 +11,10 @@ class WalkTrip < Trip
 
     walk_directions = directions(@plan['itineraries'][0]['legs'])
 
-     from: @plan['from']['name'],
+    {
+      from: @plan['from']['name'],
       to: 	@plan['to']['name'],
       directions: walk_directions
     }
   end
-
 end

@@ -4,10 +4,10 @@
 # is considered to be the first unless any hosts have the primary
 # property set.  Don't declare `role :all`, it's a meta role.
 
-# role :app, %wdeploy@example.com}
-# role :web, %wdeploy@example.com}
-# role :db,  %wdeploy@example.com}
-# 
+# role :app, %{wdeploy@example.com}
+# role :web, %{wdeploy@example.com}
+# role :db,  %{wdeploy@example.com}
+#
 
 # Extended Server Syntax
 # ======================
@@ -15,7 +15,7 @@
 # server list. The second argument is a, or duck-types, Hash and is
 # used to set extended properties on the server.
 
-# server '54.191.53.127', user: 'ubuntu', roles: %wweb app}, my_property: :my_value
+# server '54.191.53.127', user: 'ubuntu', roles: %w{web app}, my_property: :my_value
 
 
 # Custom SSH Options
@@ -25,7 +25,7 @@
 #
 # Global options
 # --------------
-#  set :ssh_options, 
+#  set :ssh_options, {
 #    keys: %w(/home/rlisowski/.ssh/id_rsa),
 #    forward_agent: false,
 #    auth_methods: %w(password)
@@ -35,8 +35,8 @@
 # ------------------------------------
 # server 'example.com',
 #   user: 'user_name',
-#   roles: %wweb app},
-#   ssh_options: 
+#   roles: %w{web app},
+#   ssh_options: {
 #     user: 'user_name', # overrides user setting above
 #     keys: %w(/home/user_name/.ssh/id_rsa),
 #     forward_agent: false,
@@ -46,8 +46,8 @@
 #
 server '54.191.53.127',
 	user: 'ubuntu',
-	roles: %wweb app db},
-	ssh_options: 
+	roles: %w{web app db},
+	ssh_options: {
 		keys: %w(/Users/Katie/.ssh/moar-a2b-api.pem),
 		forward_agent: false,
 		auth_methods: %w(publickey)
