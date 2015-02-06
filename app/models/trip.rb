@@ -27,15 +27,17 @@ class Trip
     def set_routes
       case @mode
       when 'TRANSIT'
-        transit_routes(otp_routes)
+        transit_routes
       when 'CAR'
         car_route(cars_nearby[0])
       when 'WALK'
+				walk_route
       end
     end
 
     ### TRANSIT
-		def transit_routes(plan)
+		def transit_routes
+			plan = otp_routes
 			{ from:        plan['from']['name'], # start location according to OTP
 		 		to:          plan['to']['name'], # end location according to OTP
 				itineraries: transit_itineraries(plan['itineraries']) }
@@ -109,11 +111,22 @@ class Trip
 			Latitude.great_circle_distance(@origin[0], @origin[1], coords[0], coords[1])
 		end
 
+		def walk_route
+			walk = otp_routes
+			return nil unless walk
+
+			walk_directions = directions(walk['itineraries'][0]['legs'])
+
+			{ from: walk['from']['name'],
+				to: 	walk['to']['name'],
+		 		directions: walk_directions	}
+		end
+
 		### OTP
     def otp_routes(mode=@mode, origin=@origin, destination=@destination)
       origin = origin.join(',')
       destination = destination.join(',')
-      url = Rails.env.production? ? "http://api.seattle-a2b.com/" : "http://localhost:8080/"
+      url = Rails.env.production? ? "http://otp.seattle-a2b.com/" : "http://localhost:8080/"
       url += "otp/routers/default/plan?fromPlace="
 
       case mode
