@@ -21,7 +21,7 @@ class Stop
 
 	def arrival
 		a = all_arrivals.find { |arrival| arrival['tripId'] == @trip_id }
-		if a
+		if a && a['predicted']
 			@real_time = true
 			time(a['predictedArrivalTime'])
 		else
