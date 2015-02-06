@@ -1,7 +1,21 @@
 class StreetLeg
-  include Mongoid::Document
-  field :mode, type: String
-	field :start_time, type: Time
-	field :end_time, type: Time
-	embeds_many :turns
+  attr_accessor :mode
+
+  def initialize(leg)
+    @mode = leg['mode']
+    @start_time = leg['start_time']
+    @end_time = leg['end_time']
+    turns(leg['steps'])
+  end
+
+  def turns(steps)
+    @turns = []
+    steps.each  |step| @turns << Turn.new(step) }
+  end
+
+  def to_s
+    str = ""
+    @turns.each  |turn| str += "#turn.to_s}. " }
+    str
+  end
 end

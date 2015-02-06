@@ -1,4 +1,5 @@
 require 'rails_helper'
+require 'latitude'
 
 RSpec.describe CarTrip, :type => :model do
   before(:all) do
@@ -16,16 +17,17 @@ RSpec.describe CarTrip, :type => :model do
       end
     end
 
-    it 'finds the nearest car' do
-      expect(@coords).to eq [47.68399, -122.35496]
+    it 'finds a car within 1.6 km' do
+      distance = Latitude.great_circle_distance(@origin[0], @origin[1], @coords[0], @coords[1])
+      expect(distance).to be < 1.6
     end
 
     it 'returns walking directions for first leg' do
-       expect(@route[:itinerary][:directions][0].mode).to eq 'WALK'
+      expect(@directions[0].mode).to eq 'WALK'
     end
 
     it 'returns driving directions for second leg' do
-       expect(@route[:itinerary][:directions][1].mode).to eq 'CAR'
+      expect(@directions[1].mode).to eq 'CAR'
     end
   end
 end

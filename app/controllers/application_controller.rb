@@ -8,7 +8,7 @@ class ApplicationController < ActionController::API
 		walk_trip = WalkTrip.new(origin_coords, destination_coords)
 		transit_trip = TransitTrip.new(origin_coords, destination_coords)
 
-		routes = { car: car_trip.route, walk: walk_trip.route, transit: transit_trip.routes }
+		routes =  car: car_trip.route, walk: walk_trip.route, transit: transit_trip.routes }
 		render json: routes.to_json
 	end
 
@@ -26,6 +26,6 @@ class ApplicationController < ActionController::API
 		def show_duration(seconds)
 			hours = (seconds / 3600).floor
 			minutes = ((seconds % 3600) / 60).floor
-			hours > 0 ? "#{hours} hours and #{minutes} minutes" : "#{minutes} minutes"
+			hours > 0 ? "#hours} hours and #minutes} minutes" : "#minutes} minutes"
 		end
 end
