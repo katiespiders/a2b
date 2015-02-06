@@ -2,7 +2,7 @@ require 'rails_helper'
 
 RSpec.describe Trip, :type => :model do
 	before(:all) do
-		@origin = [47.687161, -122.352952] 
+		@origin = [47.687161, -122.352952]
 		@destination = [47.6069542, -122.3052976]
 	end
 
@@ -18,10 +18,10 @@ RSpec.describe Trip, :type => :model do
   describe 'transit route' do
 		before(:all) do
 			VCR.use_cassette('transit_trip') do
-				@routes =	Trip.new('TRANSIT', @origin, @destination).routes
+				@routes =	Trip.new('TRANSIT', @origin, @destination).itinerary
 			end
 		end
-		
+
     it 'starts at my house' do
 			expect(@routes[:from]).to eq "North 80th Street"
 		end
@@ -45,13 +45,13 @@ RSpec.describe Trip, :type => :model do
   describe 'car route' do
 		before(:all) do
       VCR.use_cassette('car_trip') do
-        @route = Trip.new('CAR', @origin, @destination).routes
+        @route = Trip.new('CAR', @origin, @destination).itinerary
 				@coords = @route[:coordinates]
 				@itinerary = @route[:itinerary]
 				@directions = @itinerary[:directions]
 			end
 		end
-		
+
     it 'finds the nearest car' do
 			expect(@coords).to eq [47.69969, -122.3558]
 		end
@@ -68,7 +68,7 @@ RSpec.describe Trip, :type => :model do
 	describe 'walk route' do
 		before(:all) do
 			VCR.use_cassette('walk_trip') do
-				@route = Trip.new('WALK', @origin, @destination).routes
+				@route = Trip.new('WALK', @origin, @destination).itinerary
 			end
 		end
 
