@@ -3,8 +3,8 @@ class StreetLeg
 
   def initialize(leg)
     @mode = leg['mode']
-    @start_time = leg['start_time']
-    @end_time = leg['end_time']
+    @start_time = leg['startTime']
+    @end_time = leg['endTime']
     turns(leg['steps'])
   end
 

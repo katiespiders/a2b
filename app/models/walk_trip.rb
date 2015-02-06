@@ -9,11 +9,13 @@ class WalkTrip < Trip
   def route
     return nil unless @plan # workaround for OTP API bug
 
-    walk_directions = directions(@plan['itineraries'][0]['legs'])
+    itinerary = @plan['itineraries'][0]
+    walk_directions = directions(itinerary['legs'])
 
     {
       from: @plan['from']['name'],
       to: 	@plan['to']['name'],
+      time: itinerary['walkTime'],
       directions: walk_directions
     }
   end

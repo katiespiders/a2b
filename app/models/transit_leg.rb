@@ -16,9 +16,9 @@ class TransitLeg
   end
 
 	def trip_id(id)
-		if @agency == 'KCM'
+		if @agency == 'KCM' # King County Metro
 			'1_' + id
-		elsif @agency == 'ST'
+    elsif @agency == 'ST' # Sound Transit
 			'40_' + id
 		end
 	end
