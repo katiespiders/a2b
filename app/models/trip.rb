@@ -9,7 +9,7 @@ class Trip
     url = Rails.env.production? ? "http://otp.seattle-a2b.com/" : "http://localhost:8080/"
     url += "otp/routers/default/plan?fromPlace=#{origin}&toPlace=#{destination}"
     url += "&mode=#{mode}" unless mode == 'TRANSIT'
-
+		puts url
     HTTParty.get(url)['plan']
   end
 

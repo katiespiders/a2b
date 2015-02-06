@@ -16,6 +16,6 @@ class Turn
       "Turn #{@rel_direction.gsub('_', ' ')} to go #{@abs_direction} on #{@street} "
     end
 
-    directions +  "for #{@distance} of some unit"
+		directions +  "for #{@distance} meters.\n"
   end
 end

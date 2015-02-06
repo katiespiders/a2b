@@ -15,7 +15,7 @@ class StreetLeg
 
   def to_s
     str = ""
-    @turns.each { |turn| str += "#{turn.to_s}. " }
+    @turns.each { |turn| str += turn.to_s }
     str
   end
 end
