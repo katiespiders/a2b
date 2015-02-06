@@ -3,20 +3,16 @@ require 'trip'
 class WalkTrip < Trip
 
   def initialize(origin, destination)
-    @mode = 'WALK'
-    @origin = origin
-    @destination = destination
-    @plan = otp_routes
+    @plan = otp_routes('WALK', origin, destination)
   end
 
   def route
-    walk = otp_routes
-    return nil unless walk # workaround for OTP API bug
+    return nil unless @plan # workaround for OTP API bug
 
-    walk_directions = directions(walk['itineraries'][0]['legs'])
+    walk_directions = directions(@plan['itineraries'][0]['legs'])
 
-    { from: walk['from']['name'],
-      to: 	walk['to']['name'],
+    { from: @plan['from']['name'],
+      to: 	@plan['to']['name'],
       directions: walk_directions
     }
   end

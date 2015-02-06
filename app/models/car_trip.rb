@@ -3,22 +3,19 @@ require 'trip'
 class CarTrip < Trip
 
   def initialize(origin, destination)
-    @mode = 'CAR'
     @origin = origin
     @destination = destination
-    @plan = otp_routes
+    @car = cars_nearby[0]
   end
 
 	def route
-    car = cars_nearby[0]
-
-		{ address:      car['address'],
-			coordinates:  coords(car),
-			exterior:     car['exterior'] == 'GOOD',
-			interior:     car['interior'] == 'GOOD',
-			gas:          car['fuel'],
-			name:         car['name'],
-			itinerary:    itinerary(coords(car))
+		{ address:      @car['address'],
+			coordinates:  coords(@car),
+			exterior:     @car['exterior'] == 'GOOD',
+			interior:     @car['interior'] == 'GOOD',
+			gas:          @car['fuel'],
+			name:         @car['name'],
+			itinerary:    itinerary(coords(@car))
     }
 	end
 
@@ -33,7 +30,7 @@ class CarTrip < Trip
     end
 
     def cars_available
-      HTTParty.get(cars_url)['placemarks']
+      HTTParty.get(url)['placemarks']
     end
 
     def url
@@ -51,7 +48,8 @@ class CarTrip < Trip
 
   		{ from:       walk['from']['name'],
   			to:         drive['to']['name'],
-  			directions: [walk_directions[0], drive_directions[0]] }
+  			directions: [walk_directions[0], drive_directions[0]]
+      }
   	end
 
   	def coords(car)

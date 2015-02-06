@@ -4,10 +4,10 @@ require 'json'
 
 class ApplicationController < ActionController::API
 	def trip_options
-		car_trip = Trip.new('CAR', origin_coords, destination_coords)
-		walk_trip = Trip.new('WALK', origin_coords, destination_coords)
-		transit_trip = Trip.new('TRANSIT', origin_coords, destination_coords)
-		routes = { car: car_trip.itinerary, walk: walk_trip.itinerary, transit: transit_trip.itinerary }
+		car_trip = CarTrip.new(origin_coords, destination_coords)
+		walk_trip = WalkTrip.new(origin_coords, destination_coords)
+		transit_trip = TransitTrip.new(origin_coords, destination_coords)
+		routes = { car: car_trip.route, walk: walk_trip.route, transit: transit_trip.routes }
 		render json: routes.to_json
 	end
 

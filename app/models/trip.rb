@@ -2,37 +2,20 @@ require 'httparty'
 require 'latitude'
 
 class Trip
-	def initialize(mode, origin, destination)
-		@mode = mode
-		@origin = origin
-		@destination = destination
-	end
 
-  def itinerary
-		case @mode
-		when 'TRANSIT'
-			TransitTrip.new(@origin, @destination)
-		when 'CAR'
-			CarTrip.new(@origin, @destination)
-		when 'WALK'
-			WalkTrip.new(@origin, @destination)
-		end
-	end
-
-  def otp_routes(mode=@mode, origin=@origin, destination=@destination)
+  def otp_routes(mode, origin, destination)
     origin = origin.join(',')
     destination = destination.join(',')
     url = Rails.env.production? ? "http://otp.seattle-a2b.com/" : "http://localhost:8080/"
-    url += "otp/routers/default/plan?fromPlace="
+    url += "otp/routers/default/plan?fromPlace=#{origin}&toPlace=#{destination}"
 
     case mode
-    when 'TRANSIT'
-      url += "#{origin}&toPlace=#{destination}"
-    when 'WALK' # either entire trip or first leg of car2go trip
-      url += "#{@origin.join(',')}&toPlace=#{destination}&mode=WALK"
-    when 'CAR'  # second leg of car2go trip
-      url += "#{origin}&toPlace=#{@destination.join(',')}&mode=CAR"
+    when 'WALK'
+      url += '&mode=WALK'
+    when 'CAR'
+      url += '&mode=CAR'
     end
+    
     HTTParty.get(url)['plan']
   end
 
