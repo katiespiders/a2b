@@ -7,7 +7,7 @@ class ApplicationController < ActionController::API
 		car_trip = Trip.new('CAR', origin_coords, destination_coords)
 		walk_trip = Trip.new('WALK', origin_coords, destination_coords)
 		transit_trip = Trip.new('TRANSIT', origin_coords, destination_coords)
-		routes = { car: car_trip.routes, walk: walk_trip.routes, transit: transit_trip.routes }
+		routes = { car: car_trip.itinerary, walk: walk_trip.itinerary, transit: transit_trip.itinerary }
 		render json: routes.to_json
 	end
 

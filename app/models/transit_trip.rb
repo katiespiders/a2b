@@ -1,7 +1,12 @@
+require 'trip'
+
 class TransitTrip < Trip
 
-	def initialize(plan)
-		@plan = plan
+	def initialize(origin, destination)
+    @mode = 'TRANSIT'
+    @origin = origin
+    @destination = destination
+    @plan = otp_routes
 	end
 
 	def routes
@@ -10,13 +15,13 @@ class TransitTrip < Trip
 			itineraries: transit_itineraries(@plan['itineraries']) }
 	end
 
-	def transit_itineraries(itin_array) # all itineraries returned by OTP
-		transit_trip_array = []
-		itin_array.each { |itin| transit_trip_array << transit_itin_hash(itin) }
-		transit_trip_array
+	def itineraries(itins_array) # all itineraries returned by OTP
+		trips_array = []
+		itins_array.each { |itin| trips_array << itin_hash(itin) }
+		trip_array
 	end
 
-	def transit_itin_hash(itin)
+	def itin_hash(itin)
 		{	start_time:     itin['startTime'],
 			end_time:       itin['endTime'],
 			walk_time:      itin['walkTime'],
