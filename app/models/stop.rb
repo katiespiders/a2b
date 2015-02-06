@@ -8,7 +8,6 @@ class Stop
 		@trip_id = trip_id
 		@scheduled = time(stop['departure'])
     @actual = arrival
-		raise
   end
 
   def to_s
