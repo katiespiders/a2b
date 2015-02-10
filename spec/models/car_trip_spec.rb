@@ -1,10 +1,11 @@
 require 'rails_helper'
 require 'latitude'
+require 'location'
 
 RSpec.describe CarTrip, :type => :model do
   before(:all) do
-    @origin = [47.687161, -122.352952]
-    @destination = [47.6069542, -122.3052976]
+    @origin = "1301 5th Ave Seattle"
+    @destination = "525 21st Ave Seattle"
   end
 
   describe 'car route' do
@@ -18,7 +19,7 @@ RSpec.describe CarTrip, :type => :model do
     end
 
     it 'finds a car within 1.6 km' do
-      distance = Latitude.great_circle_distance(@origin[0], @origin[1], @coords[0], @coords[1])
+      distance = Latitude.great_circle_distance(@origin.lat, @origin.long, @coords.lat, @coords.long)
       expect(distance).to be < 1.6
     end
 

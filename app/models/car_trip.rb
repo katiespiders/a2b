@@ -3,8 +3,8 @@ require 'trip'
 class CarTrip < Trip
 
   def initialize(origin, destination)
-    @origin = origin
-    @destination = destination
+    @origin = geocode(origin)
+    @destination = geocode(destination)
     @car = cars_nearby[0]
   end
 
@@ -33,39 +33,18 @@ class CarTrip < Trip
     end
 
     def coords(car)
-      [car['coordinates'][1], car['coordinates'][0]]
+      Location.new(car['coordinates'][1], car['coordinates'][0])
     end
 
     def distance(coords) # in kilometers
-      Latitude.great_circle_distance(@origin[0], @origin[1], coords[0], coords[1])
-    end
-
-    def otp_itinerary(coordinates)
-      walk = otp_routes('WALK', @origin, coordinates) # origin to car location
-      drive = otp_routes('CAR', coordinates, @destination) # car location to destination
-
-      if walk && drive # hack for OTP API bug
-        walk_directions = directions(walk['itineraries'][0]['legs'])
-        drive_directions = directions(drive['itineraries'][0]['legs'])
-        { from:       walk['from']['name'],
-          to:         drive['to']['name'],
-          directions: [walk_directions[0], drive_directions[0]] }
-
-      elsif !walk
-        drive_directions = directions(drive['itineraries'][0]['legs'])
-        { directions: ['No walking directions', drive_directions[0]] }
-
-      elsif !drive
-        walk_directions = directions(walk['itineraries'][0]['legs'])
-        { directions: [walk_directions[0], 'No driving directions'] }
-
-      else
-        { directions: ['wow.', 'very fail.'] }
-      end
+      Latitude.great_circle_distance(@origin.lat, @origin.long, coords.lat, coords.long)
     end
 
     def itinerary(coordinates)
-      walk = google_routes('walking', )
+      walk = google_routes('walking', @origin.to_s, coordinates.to_s)
+      drive = google_routes('driving', coordinates.to_s, @destination.to_s)
+    end
+
   	def car_hash(car)
   		{ address: 			car['address'],
   			coordinates:	coords(car),

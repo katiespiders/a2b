@@ -9,7 +9,7 @@ VCR.configure do |c|
   # your HTTP request service. You can also use fakeweb, webmock, and more
   c.hook_into :webmock
   # c.debug_logger = $stdout
-  c.default_cassette_options = { serialize_with: :json }
+  c.default_cassette_options = { serialize_with: :json, preserve_exact_body_bytes: true }
   c.configure_rspec_metadata!
 end
 
