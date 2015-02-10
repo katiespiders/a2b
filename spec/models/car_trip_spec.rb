@@ -4,31 +4,28 @@ require 'location'
 
 RSpec.describe CarTrip, :type => :model do
   before(:all) do
-    @origin = "1301 5th Ave Seattle"
-    @destination = "525 21st Ave Seattle"
+    VCR.use_cassette('test trip') do
+      origin = "1301 5th Ave Seattle"
+      destination = "525 21st Ave Seattle"
+      @trip = CarTrip.new(origin, destination)
+    end
   end
 
   describe 'car route' do
     before(:all) do
-      VCR.use_cassette('car_trip') do
-        @route = CarTrip.new(@origin, @destination).route
+      VCR.use_cassette('car trip') do
+        @route = @trip.route
         @coords = @route[:coordinates]
         @itinerary = @route[:itinerary]
-        @directions = @itinerary[:directions]
       end
     end
 
-    it 'finds a car within 1.6 km' do
-      distance = Latitude.great_circle_distance(@origin.lat, @origin.long, @coords.lat, @coords.long)
-      expect(distance).to be < 1.6
-    end
-
     it 'returns walking directions for first leg' do
-      expect(@directions[0].mode).to eq 'WALK'
+      expect(@itinerary[0][0].mode).to eq 'WALK'
     end
 
     it 'returns driving directions for second leg' do
-      expect(@directions[1].mode).to eq 'CAR'
+      expect(@itinerary[1][0].mode).to eq 'CAR'
     end
   end
 end

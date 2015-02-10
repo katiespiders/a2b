@@ -4,14 +4,24 @@ require 'location'
 
 class Trip
 
-	def directions(legs) # array of trip legs, e.g. [walk, car] or [walk, bus, bus, walk]
+	def otp_directions(legs)
 		dir_array = []
 		legs.each do |leg|
-			if leg['mode'] == 'WALK' || leg['mode'] == 'CAR'
-        dir_array << StreetLeg.new(leg)
+			if leg['mode'] == 'WALK'
+        dir_array << StreetLeg.new(leg, 'otp')
 			else
         dir_array << TransitLeg.new(leg)
 			end
+		end
+		dir_array
+	end
+
+	def google_directions(legs, mode)
+		dir_array = []
+		legs.each do |leg|
+			l = StreetLeg.new(leg, 'google')
+			l.mode = mode
+			dir_array << l
 		end
 		dir_array
 	end
@@ -27,13 +37,13 @@ class Trip
     url = 'https://maps.googleapis.com/maps/api/directions/json?'
     url += "origin=#{origin.to_s}&destination=#{destination.to_s}&mode=#{mode}"
     url += "&key=#{ENV['GOOGLE_KEY']}"
-    HTTParty.get(url)
+    HTTParty.get(url)['routes']
   end
 
   def geocode(address)
     results = HTTParty.get(geocode_url(address))['results']
 		coords = results[0]['geometry']['location']
-	l=	Location.new(coords['lat'], coords['lng'])
+		Location.new(coords['lat'], coords['lng'])
   end
 
 	def geocode_url(address)

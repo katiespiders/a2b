@@ -1,21 +1,21 @@
 class StreetLeg
   attr_accessor :mode
 
-  def initialize(leg)
-    @mode = leg['mode']
-    @start_time = leg['startTime']
-    @end_time = leg['endTime']
-    turns(leg['steps'])
+  def initialize(leg, source)
+    @source = source
+    if source == 'otp'
+      @mode = leg['mode']
+      @duration = leg['endTime'] - leg['startTime']
+      turns(leg['steps'])
+    elsif source == 'google'
+      @duration = leg['duration']['value']
+      @distance = leg['distance']['value']
+      turns(leg['steps'])
+    end
   end
 
   def turns(steps)
     @turns = []
-    steps.each { |step| @turns << Turn.new(step) }
-  end
-
-  def to_s
-    str = ""
-    @turns.each { |turn| str += turn.to_s }
-    str
+    steps.each { |step| @turns << Turn.new(step, @source).html }
   end
 end
