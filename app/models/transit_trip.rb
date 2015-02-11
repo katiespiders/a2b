@@ -1,5 +1,3 @@
-require 'otp_trip'
-
 class TransitTrip < OTPTrip
 	attr_accessor :route
 

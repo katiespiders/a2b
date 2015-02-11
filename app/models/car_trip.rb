@@ -1,5 +1,3 @@
-require 'google_trip'
-
 class CarTrip < GoogleTrip
 
   def initialize(origin, destination)
