@@ -1,5 +1,5 @@
 class Itinerary < OTPTrip
-  attr_accessor :route
+  attr_accessor :trips
 
   def initialize(itin)
   	@start_time =     itin['startTime']
@@ -10,6 +10,6 @@ class Itinerary < OTPTrip
     @walk_distance =  itin['walkDistance']
     @xfers =          itin['transfers']
     @fare =           itin['fare']['fare']['regular']['cents'] if itin['fare']
-    @route =          directions(itin['legs'])
+    @trips =          directions(itin['legs'])
   end
 end
