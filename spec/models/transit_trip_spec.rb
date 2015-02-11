@@ -19,7 +19,7 @@ RSpec.describe TransitTrip, :type => :model do
       expect(@trip[:from]).to eq "5th Avenue"
     end
 
-    it 'ends at seven star' do
+    it 'ends at Seven Star' do
       expect(@trip[:to]).to eq "21st Avenue"
     end
 

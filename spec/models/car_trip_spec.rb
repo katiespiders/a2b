@@ -4,7 +4,7 @@ require 'location'
 
 RSpec.describe CarTrip, :type => :model do
   before(:all) do
-    VCR.use_cassette('test trip') do
+    VCR.use_cassette('test car trip') do
       origin = "1301 5th Ave Seattle"
       destination = "525 21st Ave Seattle"
       @trip = CarTrip.new(origin, destination)
