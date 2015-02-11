@@ -1,4 +1,4 @@
-class Itinerary < Trip
+class Itinerary < OTPTrip
   attr_accessor :route
 
   def initialize(itin)

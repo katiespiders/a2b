@@ -1,6 +1,6 @@
-require 'trip'
+require 'google_trip'
 
-class CarTrip < Trip
+class CarTrip < GoogleTrip
 
   def initialize(origin, destination)
     @origin = geocode(origin)
@@ -41,11 +41,11 @@ class CarTrip < Trip
     end
 
     def itinerary(coordinates)
-      walk = google_routes('walking', @origin.to_s, coordinates.to_s)[0]['legs']
-      drive = google_routes('driving', coordinates.to_s, @destination.to_s)[0]['legs']
+      walk = routes('walking', @origin.to_s, coordinates.to_s)[0]['legs']
+      drive = routes('driving', coordinates.to_s, @destination.to_s)[0]['legs']
 
-      walk_directions = google_directions(walk, 'WALK')
-      drive_directions = google_directions(drive, 'CAR')
+      walk_directions = directions(walk, 'WALK')
+      drive_directions = directions(drive, 'CAR')
 
       [walk_directions, drive_directions]
     end

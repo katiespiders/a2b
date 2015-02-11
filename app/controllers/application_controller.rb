@@ -8,32 +8,24 @@ class ApplicationController < ActionController::API
 
 	def trip_options
 		 car_trip = CarTrip.new(origin, destination)
-		# walk_trip = WalkTrip.new(origin_coords, destination_coords)
-		# transit_trip = TransitTrip.new(origin_coords, destination_coords)
+		 walk_trip = WalkTrip.new(origin, destination)
+		 transit_trip = TransitTrip.new(origin, destination)
 
 		 routes =  {
-		 	car: car_trip.route
+		 	car: car_trip.route,
+			walk: walk_trip.route,
+			transit: transit_trip.route
 		 	}
 		render json: routes
 	end
 
 	private
 		def origin
-			'352 N 80th St Seattle'
+			'1301 5th Ave, Seattle'
 		end
 
 		def destination
 			'525 21st Ave, Seattle'
-		end
-
-		def origin_coords
-			Geocoder.coordinates("352 N. 80th St, Seattle")
-			# [47.608830, -122.334411]
-		end
-
-		def destination_coords
-			Geocoder.coordinates("525 21st Ave, Seattle")
-			# [47.6069542, -122.3052976]
 		end
 
 		def test

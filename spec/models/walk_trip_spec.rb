@@ -2,8 +2,10 @@ require 'rails_helper'
 
 RSpec.describe WalkTrip, :type => :model do
   before(:all) do
-    @origin = [47.687161, -122.352952]
-    @destination = [47.6069542, -122.3052976]
+    VCR.use_cassette('test walk trip') do
+      @origin = "1301 5th Ave Seattle"
+      @destination = "525 21st Ave Seattle"
+    end
   end
 
   describe 'walk route' do

@@ -1,21 +1,19 @@
-require 'trip'
+require 'google_trip'
 
-class WalkTrip < Trip
+class WalkTrip < GoogleTrip
 
   def initialize(origin, destination)
-    @plan = otp_routes('WALK', origin, destination)
+    @plan = routes('walking', geocode(origin), geocode(destination))[0]['legs']
   end
 
   def route
-    return nil unless @plan # workaround for OTP API bug
-
-    itinerary = @plan['itineraries'][0]
-    walk_directions = directions(itinerary['legs'])
+    walk_directions = directions(@plan, 'WALK')
 
     {
-      from: @plan['from']['name'],
-      to: 	@plan['to']['name'],
-      time: itinerary['walkTime'],
+      from: @plan[0]['start_address'],
+      to: 	@plan[0]['end_address'],
+      duration: @plan[0]['duration']['value'],
+      distance: @plan[0]['distance']['value'],
       directions: walk_directions
     }
   end

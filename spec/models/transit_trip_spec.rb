@@ -2,31 +2,33 @@ require 'rails_helper'
 
 RSpec.describe TransitTrip, :type => :model do
   before(:all) do
-    @origin = [47.687161, -122.352952]
-    @destination = [47.6069542, -122.3052976]
+    VCR.use_cassette('test transit trip') do
+      @origin = "1301 5th Ave Seattle"
+      @destination = "525 21st Ave Seattle"
+    end
   end
 
   describe 'transit route' do
     before(:all) do
-      VCR.use_cassette('transit_trip') do
-        @routes =	TransitTrip.new(@origin, @destination).routes
+      VCR.use_cassette('transit trip') do
+        @trip =	TransitTrip.new(@origin, @destination).route
       end
     end
 
-    it 'starts at my house' do
-      expect(@routes[:from]).to eq "North 80th Street"
+    it 'starts at Rainier Tower' do
+      expect(@trip[:from]).to eq "5th Avenue"
     end
 
     it 'ends at seven star' do
-      expect(@routes[:to]).to eq "21st Avenue"
+      expect(@trip[:to]).to eq "21st Avenue"
     end
 
     it 'returns an array of itineraries' do
-      expect(@routes[:itineraries]).to be_instance_of Array
+      expect(@trip[:directions]).to be_instance_of Array
     end
 
     it 'returns an array of walking/bus/walking directions' do
-      directions = @routes[:itineraries][0].route
+      directions = @trip[:directions][0].route
       expect(directions[0]).to be_instance_of StreetLeg
       expect(directions[1]).to be_instance_of TransitLeg
       expect(directions[2]).to be_instance_of StreetLeg

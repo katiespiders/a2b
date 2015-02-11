@@ -1,16 +1,18 @@
-require 'trip'
+require 'otp_trip'
 
-class TransitTrip < Trip
+class TransitTrip < OTPTrip
+	attr_accessor :route
 
 	def initialize(origin, destination)
-    @plan = otp_routes('TRANSIT', origin, destination)
+    @plan = routes(geocode(origin), geocode(destination))
+		@route = routes_hash
 	end
 
-	def routes
+	def routes_hash
 		{
-		  from:        @plan['from']['name'], # start location according to OTP
-			to:          @plan['to']['name'], # end location according to OTP
-			itineraries: itineraries(@plan['itineraries'])
+			from: @plan['from']['name'],
+			to: @plan['to']['name'],
+			directions: itineraries(@plan['itineraries'])
 		}
 	end
 
