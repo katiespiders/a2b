@@ -2,10 +2,15 @@ class CarTrip < GoogleTrip
   attr_accessor :trip
 
   def initialize(origin, destination)
+    time = Time.now
+    puts "geocoding car trip from #{origin} to #{destination}"
     @origin = geocode(origin)
     @destination = geocode(destination)
+    puts "#{Time.now - time} s: finding nearest car"
     @car = cars_nearby[0]
+    puts "#{Time.now - time} s: finding directions for car"
     @trip = set_route
+    puts "#{Time.now - time} s: done with car trip"
   end
 
 	def set_route

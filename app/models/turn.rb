@@ -13,7 +13,7 @@ class Turn
       rel_direction = @step['relativeDirection'].gsub('_', ' ').downcase
       distance = @step['distance']
 
-      directions = if rel_direction == 'DEPART'
+      directions = if rel_direction == 'depart'
         "Head #{abs_direction} on #{street}"
       elsif rel_direction == 'CONTINUE'
         "Continue #{abs_direction} on #{street}"
@@ -21,11 +21,11 @@ class Turn
         "Turn #{rel_direction} onto #{street}"
       end
 
-  		(directions + " for #{distance} meters.\n").html_safe
+  		(directions + " for #{distance} meters.").html_safe
     end
 
     def google_html
       distance = @step['distance']['value']
-      @step['html_instructions'] + " for #{distance} meters.\n"
+      @step['html_instructions'] + " for #{distance} meters."
     end
 end

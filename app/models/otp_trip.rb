@@ -13,8 +13,13 @@ class OTPTrip < Trip
 	end
 
   def routes(origin, destination) # expects origin and destination as Location objects
+		time = Time.now
     url = Rails.env.production? ? 'http://otp.seattle-a2b.com/' : 'http://localhost:8080/'
     url += "otp/routers/default/plan?fromPlace=#{origin.to_s}&toPlace=#{destination.to_s}"
-    HTTParty.get(url)['plan']
+		puts "finding transfer directions at #{url}"
+    rts = HTTParty.get(url)['plan']
+		puts "#{Time.now - time} s: done with transfer directions"
+		rts
+
   end
 end

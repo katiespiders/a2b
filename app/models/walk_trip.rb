@@ -2,8 +2,12 @@ class WalkTrip < GoogleTrip
   attr_accessor :trip
 
   def initialize(origin, destination)
+    time = Time.now
+    puts "geocoding walk trip from #{origin} to #{destination}"
     @route = routes('walking', geocode(origin), geocode(destination))[0]['legs']
+    puts "#{Time.now - time} s: getting walking directions"
     @trip = set_route
+    puts "#{Time.now - time} s: done with walking trip"
   end
 
   def set_route
