@@ -17,9 +17,9 @@ class ApplicationController < ActionController::API
 	def all_trips
 		origin, destination = params[:origin], params[:destination]
 		render json: {
-			car: CarTrip.new(origin, destination),
-			walk: WalkTrip.new(origin, destination),
-			transit: TransitTrip.new(origin, destination)
+			car: CarTrip.new(origin, destination).trip,
+			walk: WalkTrip.new(origin, destination).trip,
+			transit: TransitTrip.new(origin, destination).trip
 		}
 	end
 
