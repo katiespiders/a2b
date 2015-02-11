@@ -14,7 +14,7 @@ RSpec.describe CarTrip, :type => :model do
   describe 'car route' do
     before(:all) do
       VCR.use_cassette('car trip') do
-        @route = @trip.route
+        @route = @trip.trip
         @coords = @route[:coordinates]
         @itinerary = @route[:itinerary]
       end

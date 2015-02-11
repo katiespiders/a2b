@@ -11,10 +11,6 @@ class TransitLeg
     @stops = [ Stop.new(leg['from'], @trip_id), Stop.new(leg['to'], @trip_id) ]
   end
 
-  def to_s
-    "Catch the #{@route} #{@mode.downcase} #{@headsign} at #{@stops[0]}. Get off at #{@stops[1]}."
-  end
-
 	def trip_id(id)
 		if @agency == 'KCM' # King County Metro
 			'1_' + id

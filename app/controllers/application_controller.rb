@@ -1,22 +1,26 @@
-require 'httparty'
 require 'json'
 
 class ApplicationController < ActionController::API
-	def test_routes
-		render json: test
+
+	def car_trip
+		render json: CarTrip.new(params[:origin], params[:destination]).trip
 	end
 
-	def trip_options
-		 car_trip = CarTrip.new(origin, destination)
-		 walk_trip = WalkTrip.new(origin, destination)
-		 transit_trip = TransitTrip.new(origin, destination)
+	def walk_trip
+		render json: WalkTrip.new(params[:origin], params[:destination]).trip
+	end
 
-		 routes =  {
-		 	car: car_trip.route,
-			walk: walk_trip.route,
-			transit: transit_trip.route
-		 	}
-		render json: routes
+	def transit_trips
+		render json: TransitTrip.new(params[:origin], params[:destination]).trip
+	end
+
+	def all_trips
+		origin, destination = params[:origin], params[:destination]
+		render json: {
+			car: CarTrip.new(origin, destination),
+			walk: WalkTrip.new(origin, destination),
+			transit: TransitTrip.new(origin, destination)
+		}
 	end
 
 	private

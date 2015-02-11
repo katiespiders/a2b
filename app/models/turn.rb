@@ -26,6 +26,6 @@ class Turn
 
     def google_html
       distance = @step['distance']['value']
-      (@step['html_instructions'] + " for #{distance} meters.\n").html_safe
+      @step['html_instructions'] + " for #{distance} meters.\n"
     end
 end

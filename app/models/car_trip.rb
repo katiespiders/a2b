@@ -1,12 +1,14 @@
 class CarTrip < GoogleTrip
+  attr_accessor :trip
 
   def initialize(origin, destination)
     @origin = geocode(origin)
     @destination = geocode(destination)
     @car = cars_nearby[0]
+    @trip = set_route
   end
 
-	def route
+	def set_route
 		cars = car_hash(@car)
 		cars[:itinerary] = itinerary(coords(@car))
 		cars

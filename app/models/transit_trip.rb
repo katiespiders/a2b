@@ -1,9 +1,9 @@
 class TransitTrip < OTPTrip
-	attr_accessor :route
+	attr_accessor :trip
 
 	def initialize(origin, destination)
     @plan = routes(geocode(origin), geocode(destination))
-		@route = routes_hash
+		@trip = routes_hash
 	end
 
 	def routes_hash

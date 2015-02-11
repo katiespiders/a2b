@@ -1,19 +1,19 @@
-require 'google_trip'
-
 class WalkTrip < GoogleTrip
+  attr_accessor :trip
 
   def initialize(origin, destination)
-    @plan = routes('walking', geocode(origin), geocode(destination))[0]['legs']
+    @route = routes('walking', geocode(origin), geocode(destination))[0]['legs']
+    @trip = set_route
   end
 
-  def route
-    walk_directions = directions(@plan, 'WALK')
+  def set_route
+    walk_directions = directions(@route, 'WALK')
 
     {
-      from: @plan[0]['start_address'],
-      to: 	@plan[0]['end_address'],
-      duration: @plan[0]['duration']['value'],
-      distance: @plan[0]['distance']['value'],
+      from: @route[0]['start_address'],
+      to: 	@route[0]['end_address'],
+      duration: @route[0]['duration']['value'],
+      distance: @route[0]['distance']['value'],
       directions: walk_directions
     }
   end

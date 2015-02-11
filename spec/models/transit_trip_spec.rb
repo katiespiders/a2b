@@ -11,7 +11,7 @@ RSpec.describe TransitTrip, :type => :model do
   describe 'transit route' do
     before(:all) do
       VCR.use_cassette('transit trip') do
-        @trip =	TransitTrip.new(@origin, @destination).route
+        @trip =	TransitTrip.new(@origin, @destination).trip
       end
     end
 

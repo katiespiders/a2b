@@ -5,7 +5,7 @@ class StreetLeg
     @source = source
     if source == 'otp'
       @mode = leg['mode']
-      @duration = leg['endTime'] - leg['startTime']
+      @duration = (leg['endTime'] - leg['startTime']) / 1000
       turns(leg['steps'])
     elsif source == 'google'
       @duration = leg['duration']['value']

@@ -11,7 +11,7 @@ RSpec.describe WalkTrip, :type => :model do
   describe 'walk route' do
     before(:all) do
       VCR.use_cassette('walk trip') do
-        @route = WalkTrip.new(@origin, @destination).route
+        @route = WalkTrip.new(@origin, @destination).trip
       end
     end
 
