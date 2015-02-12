@@ -12,6 +12,7 @@ class StreetLeg
       @distance = leg['distance']['value']
       turns(leg['steps'])
     end
+    @instructions = 'placeholder'
   end
 
   def turns(steps)
