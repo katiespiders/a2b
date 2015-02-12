@@ -3,7 +3,7 @@ class CarTrip < GoogleTrip
 
   def initialize(origin, destination)
     time = Time.now
-    puts "geocoding car trip from #{origin} to #{destination}"
+    puts "0 s: geocoding car trip from #{origin} to #{destination}"
     @origin = geocode(origin)
     @destination = geocode(destination)
     puts "#{Time.now - time} s: finding nearest car"
@@ -14,9 +14,11 @@ class CarTrip < GoogleTrip
   end
 
 	def set_route
-		cars = car_hash(@car)
-		cars[:itinerary] = itinerary(coords(@car))
-		cars
+    if @car
+  		cars = car_hash(@car)
+  		cars[:itinerary] = itinerary(coords(@car))
+  		cars
+    end
 	end
 
   private
@@ -52,16 +54,27 @@ class CarTrip < GoogleTrip
       walk_directions = directions(walk, 'WALK')
       drive_directions = directions(drive, 'CAR')
 
-      [walk_directions, drive_directions]
+      {walk: walk_directions, drive: drive_directions}
     end
 
   	def car_hash(car)
-  		{ address: 			car['address'],
-  			coordinates:	coords(car),
+  		{ address: 			address_str(car['address']),
   	 		exterior: 		car['exterior'] == 'GOOD',
   			interior: 		car['interior'] == 'GOOD',
   			gas: 					car['fuel'],
   			name: 				car['name']	}
   	end
+
+    def address_str(address)
+      puts "!"*80, address
+      street = /^(.*),/.match(address)[1]
+      split = street.index /(\s|\d)*$/
+      puts "@"*80, "split string of length #{street.length} at #{split}"
+      if split < street.length
+        "#{street[split..-1]} #{street[0...split]}"
+      else
+        street
+      end
+    end
 
 end

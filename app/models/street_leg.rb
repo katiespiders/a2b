@@ -1,7 +1,7 @@
 class StreetLeg
   attr_accessor :mode
 
-  def initialize(leg, source)
+  def initialize(leg, source, nxt=nil)
     @source = source
     if source == 'otp'
       @mode = leg['mode']
@@ -16,6 +16,6 @@ class StreetLeg
 
   def turns(steps)
     @turns = []
-    steps.each { |step| @turns << Turn.new(step, @source).html }
+    steps.each { |step| @turns << Turn.new(step, @source) }
   end
 end

@@ -1,6 +1,7 @@
 require 'json'
 
 class ApplicationController < ActionController::API
+	before_filter :set_cors_headers
 
 	def car_trip
 		render json: CarTrip.new(params[:origin], params[:destination]).trip
@@ -24,12 +25,9 @@ class ApplicationController < ActionController::API
 	end
 
 	private
-		def origin
-			'1301 5th Ave, Seattle'
-		end
-
-		def destination
-			'525 21st Ave, Seattle'
+		def set_cors_headers
+			headers['Access-Control-Allow-Origin'] = '*'
+			headers['Access-Control-Allow-Methods'] = 'GET'
 		end
 
 		def test

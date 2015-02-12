@@ -3,7 +3,7 @@ class WalkTrip < GoogleTrip
 
   def initialize(origin, destination)
     time = Time.now
-    puts "geocoding walk trip from #{origin} to #{destination}"
+    puts "0 s: geocoding walk trip from #{origin} to #{destination}"
     @route = routes('walking', geocode(origin), geocode(destination))[0]['legs']
     puts "#{Time.now - time} s: getting walking directions"
     @trip = set_route

@@ -21,11 +21,11 @@ RSpec.describe CarTrip, :type => :model do
     end
 
     it 'returns walking directions for first leg' do
-      expect(@itinerary[0][0].mode).to eq 'WALK'
+      expect(@itinerary[:walk][0].mode).to eq 'WALK'
     end
 
     it 'returns driving directions for second leg' do
-      expect(@itinerary[1][0].mode).to eq 'CAR'
+      expect(@itinerary[:drive][0].mode).to eq 'CAR'
     end
   end
 end

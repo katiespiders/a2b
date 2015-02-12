@@ -2,23 +2,32 @@ class OTPTrip < Trip
 
 	def directions(legs)
 		dir_array = []
-		legs.each do |leg|
-			if leg['mode'] == 'WALK'
-        dir_array << StreetLeg.new(leg, 'otp')
+		legs.each_with_index do |leg, i|
+			nxt = if i == legs.length - 1
+				nil
 			else
-        dir_array << TransitLeg.new(leg)
+				make_leg(legs[i+1], i)
 			end
+			dir_array << make_leg(leg, i, nxt)
 		end
 		dir_array
+	end
+
+	def make_leg(leg, i, nxt=nil)
+		if leg['mode'] == 'WALK'
+			StreetLeg.new(leg, 'otp', nxt)
+		else
+			TransitLeg.new(leg, nxt)
+		end
 	end
 
   def routes(origin, destination) # expects origin and destination as Location objects
 		time = Time.now
     url = Rails.env.production? ? 'http://otp.seattle-a2b.com/' : 'http://localhost:8080/'
     url += "otp/routers/default/plan?fromPlace=#{origin.to_s}&toPlace=#{destination.to_s}"
-		puts "finding transfer directions at #{url}"
+		puts "0 s: finding transit routes"
     rts = HTTParty.get(url)['plan']
-		puts "#{Time.now - time} s: done with transfer directions"
+		puts "#{Time.now - time} s: done with transit routes"
 		rts
 
   end

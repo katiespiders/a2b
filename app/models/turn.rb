@@ -1,31 +1,29 @@
 class Turn
-  attr_accessor :html
 
   def initialize(step, source)
-    @step = step
-    @html = source == 'otp' ? otp_html : google_html
+    @html = source == 'otp' ? otp_html(step) : google_html(step)
   end
 
   private
-    def otp_html
-      street = @step['streetName']
-      abs_direction = @step['absoluteDirection'].downcase
-      rel_direction = @step['relativeDirection'].gsub('_', ' ').downcase
-      distance = @step['distance']
+    def otp_html(step)
+      street = step['streetName']
+      abs_direction = step['absoluteDirection'].downcase
+      rel_direction = step['relativeDirection'].gsub('_', ' ').downcase
+      @distance = step['distance']
 
       directions = if rel_direction == 'depart'
         "Head #{abs_direction} on #{street}"
-      elsif rel_direction == 'CONTINUE'
+      elsif rel_direction == 'continue'
         "Continue #{abs_direction} on #{street}"
       else
         "Turn #{rel_direction} onto #{street}"
       end
 
-  		(directions + " for #{distance} meters.").html_safe
+  		directions
     end
 
-    def google_html
-      distance = @step['distance']['value']
-      @step['html_instructions'] + " for #{distance} meters."
+    def google_html(step)
+      @distance = step['distance']['value']
+      step['html_instructions']
     end
 end

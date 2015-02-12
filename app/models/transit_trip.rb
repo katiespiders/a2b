@@ -15,8 +15,11 @@ class TransitTrip < OTPTrip
 	end
 
 	def itineraries(itins_array) # all itineraries returned by OTP
+		time = Time.now
+		puts "0 s: building transit itineraries"
 		trips_array = []
 		itins_array.each { |itin| trips_array << Itinerary.new(itin) }
+		puts "#{Time.now - time} s: done with transit itineraries"
 		trips_array
 	end
 end
