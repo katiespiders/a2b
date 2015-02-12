@@ -1,4 +1,5 @@
 class Itinerary < TransitTrip
+  attr_accessor :legs
 
   def initialize(itin)
   	@start_time =     itin['startTime'] / 1000

@@ -1,5 +1,5 @@
 class TransitLeg
-  attr_accessor :route, :headsign, :continuation, :stops
+  attr_accessor :route, :headsign, :continuation, :stops, :instructions
 
   def initialize(leg, nxt=nil)
     @mode = leg['mode']
@@ -13,7 +13,7 @@ class TransitLeg
       on: Stop.new(leg['from'], @trip_id),
       off: Stop.new(leg['to'], @trip_id)
     }
-    @instructions = instructions(nxt)
+    @instructions = instructions(nxt) unless @continuation
   end
 
 	def trip_id(id)
@@ -25,11 +25,11 @@ class TransitLeg
 	end
 
   def instructions(nxt)
-    on = @stops[:on]
-    str = if on.real_time
-      "Catch the #{@route} towards #{@headsign} at #{time(on.arrival)} (#{offset(on)}) at #{on.name}. "
+    stop = @stops[:on]
+    str = if stop.real_time
+      "Catch the #{@route} towards #{@headsign} at #{time(stop.arrival)} (#{offset(stop)}) at #{stop.name}. "
     else
-      "Catch the #{@route} towards #{@headsign} at #{on.name}, supposedly at #{time(on.arrival)}. "
+      "Catch the #{@route} towards #{@headsign} at #{stop.name}, supposedly at #{time(stop.arrival)}. "
     end
 
     if nxt && nxt.instance_of?(TransitLeg) && nxt.continuation

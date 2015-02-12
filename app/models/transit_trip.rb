@@ -1,5 +1,5 @@
 class TransitTrip < OTPTrip
-	attr_accessor :trip
+	attr_accessor :trip, :instructions
 
 	def initialize(origin, destination)
     @plan = routes(geocode(origin), geocode(destination))
