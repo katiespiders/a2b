@@ -10,6 +10,7 @@ class Stop
 		@scheduled = stop['arrival'] / 1000
     @actual = arrival
     @delay = @actual - @scheduled
+    @coords = [stop['lat'], stop['lon']]
   end
 
 	def all_arrivals

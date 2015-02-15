@@ -10,13 +10,14 @@ class OTPTrip < Trip
 			end
 			dir_array << make_leg(leg, i, nxt)
 		end
-		dir_array
+		dir_array.reject { |leg| !leg }
 	end
 
 	def make_leg(leg, i, nxt=nil)
 		if leg['mode'] == 'WALK'
-			StreetLeg.new(leg, 'otp', nxt)
+			# StreetLeg.new(leg, 'otp', nxt)
 		else
+			puts leg
 			TransitLeg.new(leg, nxt)
 		end
 	end
