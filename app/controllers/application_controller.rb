@@ -4,7 +4,7 @@ class ApplicationController < ActionController::API
 	before_filter :set_cors_headers
 
 	def car_trip
-		render json: CarTrip.new(params[:origin], params[:destination]).trip
+		render json: CarTrip.new(params[:origin]).car
 	end
 
 	def walk_trip

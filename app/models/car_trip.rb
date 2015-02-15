@@ -1,16 +1,12 @@
 class CarTrip < GoogleTrip
-  attr_accessor :trip
+  attr_accessor :car
 
-  def initialize(origin, destination)
+  def initialize(origin)
+    @origin = origin
     time = Time.now
-    puts "0 s: geocoding car trip from #{origin} to #{destination}"
-    @origin = geocode(origin)
-    @destination = geocode(destination)
-    puts "#{Time.now - time} s: finding nearest car"
-    @car = cars_nearby[0]
-    puts "#{Time.now - time} s: finding directions for car"
-    @trip = set_route
-    puts "#{Time.now - time} s: done with car trip"
+    puts "0 s: finding nearest car"
+    @car = car_hash(cars_nearby[0])
+    puts "#{Time.now - time} s: found car"
   end
 
 	def set_route
@@ -40,11 +36,31 @@ class CarTrip < GoogleTrip
     end
 
     def coords(car)
-      Location.new(car['coordinates'][1], car['coordinates'][0])
+      [car['coordinates'][1], car['coordinates'][0]]
     end
 
     def distance(coords) # in kilometers
-      Latitude.great_circle_distance(@origin.lat, @origin.long, coords.lat, coords.long)
+      origin = @origin.split(',')
+      Latitude.great_circle_distance(origin[0], origin[1], coords[0], coords[1])
+    end
+
+  	def car_hash(car)
+  		{ address: 			address_str(car['address']),
+        coordinates:  coords(car),
+  	 		exterior: 		car['exterior'] == 'GOOD',
+  			interior: 		car['interior'] == 'GOOD',
+  			gas: 					car['fuel'],
+  			name: 				car['name']	}
+  	end
+
+    def address_str(address)
+      street = /^(.*),/.match(address)[1]
+      split = street.index /(\s|\d)*$/
+      if split < street.length
+        "#{street[split..-1]} #{street[0...split]}"
+      else
+        street
+      end
     end
 
     def itinerary(coordinates)
@@ -55,26 +71,6 @@ class CarTrip < GoogleTrip
       drive_directions = directions(drive, 'CAR')
 
       {walk: walk_directions, drive: drive_directions}
-    end
-
-  	def car_hash(car)
-  		{ address: 			address_str(car['address']),
-  	 		exterior: 		car['exterior'] == 'GOOD',
-  			interior: 		car['interior'] == 'GOOD',
-  			gas: 					car['fuel'],
-  			name: 				car['name']	}
-  	end
-
-    def address_str(address)
-      puts "!"*80, address
-      street = /^(.*),/.match(address)[1]
-      split = street.index /(\s|\d)*$/
-      puts "@"*80, "split string of length #{street.length} at #{split}"
-      if split < street.length
-        "#{street[split..-1]} #{street[0...split]}"
-      else
-        street
-      end
     end
 
 end

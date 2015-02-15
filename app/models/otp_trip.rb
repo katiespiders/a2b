@@ -21,20 +21,13 @@ class OTPTrip < Trip
 		end
 	end
 
-	def html_instructions(legs)
-		instr = ''
-		legs.each { |leg| instr += "#{leg.instructions} " }
-		instr
-	end
-
-  def routes(origin, destination) # expects origin and destination as Location objects
+  def routes(origin, destination)
 		time = Time.now
     url = Rails.env.production? ? 'http://otp.seattle-a2b.com/' : 'http://localhost:8080/'
-    url += "otp/routers/default/plan?fromPlace=#{origin.to_s}&toPlace=#{destination.to_s}"
+    url += "otp/routers/default/plan?fromPlace=#{origin}&toPlace=#{destination}"
 		puts "0 s: finding transit routes"
     rts = HTTParty.get(url)['plan']
 		puts "#{Time.now - time} s: done with transit routes"
 		rts
-
   end
 end

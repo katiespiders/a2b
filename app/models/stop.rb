@@ -13,7 +13,8 @@ class Stop
   end
 
 	def all_arrivals
-		HTTParty.get("http://api.pugetsound.onebusaway.org/api/where/arrivals-and-departures-for-stop/#{@stop_id}.json?key=#{ENV['OBA_KEY']}")['data']['entry']['arrivalsAndDepartures']
+    url = "http://api.pugetsound.onebusaway.org/api/where/arrivals-and-departures-for-stop/#{@stop_id}.json?key=#{ENV['OBA_KEY']}"
+		HTTParty.get(url)['data']['entry']['arrivalsAndDepartures']
 	end
 
 	def arrival

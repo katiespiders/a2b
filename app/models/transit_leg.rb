@@ -33,7 +33,7 @@ class TransitLeg
     end
 
     if nxt && nxt.instance_of?(TransitLeg) && nxt.continuation
-        str += "Stay on the #{nxt.route} and get off at #{nxt.stops[:off].name}."
+      str += "Stay on the #{nxt.route} and get off at #{nxt.stops[:off].name}."
     else
       str += "Get off at #{@stops[:off].name}."
     end
