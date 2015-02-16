@@ -7,10 +7,6 @@ class ApplicationController < ActionController::API
 		render json: CarTrip.new(params[:origin]).car
 	end
 
-	def walk_trip
-		render json: WalkTrip.new(params[:origin], params[:destination]).trip
-	end
-
 	def transit_trips
 		render json: TransitTrip.new(params[:origin], params[:destination]).trip
 	end
@@ -19,14 +15,13 @@ class ApplicationController < ActionController::API
 		origin, destination = params[:origin], params[:destination]
 		render json: {
 			car: CarTrip.new(origin, destination).trip,
-			walk: WalkTrip.new(origin, destination).trip,
 			transit: TransitTrip.new(origin, destination).trip
 		}
 	end
 
 	private
 		def set_cors_headers
-			headers['Access-Control-Allow-Origin'] = '*'
+			headers['Access-Control-Allow-Origin'] = Rails.env.development? ? 'http://localhost:9393' : 'http://seattle-a2b.com'
 			headers['Access-Control-Allow-Methods'] = 'GET'
 		end
 
