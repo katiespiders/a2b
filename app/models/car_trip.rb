@@ -1,4 +1,4 @@
-class CarTrip < GoogleTrip
+class CarTrip
   attr_accessor :car
 
   def initialize(origin)
@@ -8,14 +8,6 @@ class CarTrip < GoogleTrip
     @car = car_hash(cars_nearby[0])
     puts "#{Time.now - time} s: found car"
   end
-
-	def set_route
-    if @car
-  		cars = car_hash(@car)
-  		cars[:itinerary] = itinerary(coords(@car))
-  		cars
-    end
-	end
 
   private
     def cars_nearby
@@ -62,15 +54,4 @@ class CarTrip < GoogleTrip
         street
       end
     end
-
-    def itinerary(coordinates)
-      walk = routes('walking', @origin.to_s, coordinates.to_s)[0]['legs']
-      drive = routes('driving', coordinates.to_s, @destination.to_s)[0]['legs']
-
-      walk_directions = directions(walk, 'WALK')
-      drive_directions = directions(drive, 'CAR')
-
-      {walk: walk_directions, drive: drive_directions}
-    end
-
 end

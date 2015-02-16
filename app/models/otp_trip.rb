@@ -3,23 +3,22 @@ class OTPTrip < Trip
 	def directions(legs)
 		dir_array = []
 		legs.each_with_index do |leg, i|
-			nxt = if i == legs.length - 1
-				nil
+			if leg['mode'] == 'WALK'
+				dir_array << {
+					mode: 'WALK',
+					from: [leg['from']['lat'], leg['from']['lon']],
+					to: [leg['to']['lat'], leg['to']['lon']],
+					next_mode: next_mode(legs, i)
+				}
 			else
-				make_leg(legs[i+1], i)
+				dir_array << TransitLeg.new(leg, next_mode(legs, i))
 			end
-			dir_array << make_leg(leg, i, nxt)
 		end
-		dir_array.reject { |leg| !leg }
+		dir_array
 	end
 
-	def make_leg(leg, i, nxt=nil)
-		if leg['mode'] == 'WALK'
-			# StreetLeg.new(leg, 'otp', nxt)
-		else
-			puts leg
-			TransitLeg.new(leg, nxt)
-		end
+	def next_mode(legs, i)
+		legs[i+1] ? legs[i+1]['mode'] : nil
 	end
 
   def routes(origin, destination)

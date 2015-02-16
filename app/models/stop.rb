@@ -4,6 +4,7 @@ class Stop
   attr_accessor :name, :actual, :scheduled, :delay, :real_time
 
   def initialize(stop, trip_id)
+    puts stop
     @name = stop['name']
     @stop_id = '1_' + stop['stopId']['id']
 		@trip_id = trip_id
