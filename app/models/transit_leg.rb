@@ -1,41 +1,29 @@
 class TransitLeg
-  attr_accessor :route, :headsign, :continuation, :stops, :instructions
+  attr_accessor :route, :headsign, :continuation, :stops
 
   def initialize(leg, next_mode=nil)
     @mode = leg['mode']
+    @next_mode = next_mode
     @route = leg['route']
     @headsign = leg['headsign']
-		@agency = leg['agencyId']
-		@trip_id = trip_id(leg['tripId'])
     @continuation = leg['interlineWithPreviousLeg']
-    @express = leg['tripShortName'] == 'EXPRESS'
-    @stops = {
-      on: Stop.new(leg['from'], @trip_id),
-      off: Stop.new(leg['to'], @trip_id)
-    }
-    @duration = @stops[:off].actual - @stops[:on].actual
-    @next_mode = next_mode
+    
+    realtime_arrival(leg)
   end
 
-	def trip_id(id)
-		if @agency == 'KCM' # King County Metro
-			'1_' + id
-    elsif @agency == 'ST' # Sound Transit
-			'40_' + id
-		end
-	end
+  private
+    def realtime_arrival(leg)
+      trip_id = '1_' + leg['tripId']
 
-  def offset(stop)
-    if stop.delay.abs < 60
-      'on time'
-    elsif stop.delay < 0
-      "#{stop.delay/60} minutes early"
-    else
-      "#{stop.delay/60} minutes late"
+      @stops = {
+        on: Stop.new(leg['from'], trip_id),
+        off: Stop.new(leg['to'], trip_id)
+      }
+
+      @duration = @stops[:off].time - @stops[:on].time
+      @times = {
+        start: @stops[:on].time_string,
+        end: @stops[:off].time_string
+      }
     end
-  end
-
-  def time(epoch)
-    Time.at(epoch).strftime("%-I:%M %P")
-  end
 end

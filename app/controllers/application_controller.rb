@@ -3,20 +3,12 @@ require 'json'
 class ApplicationController < ActionController::API
 	before_filter :set_cors_headers
 
-	def car_trip
+	def car
 		render json: CarTrip.new(params[:origin]).car
 	end
 
-	def transit_trips
+	def transit
 		render json: TransitTrip.new(params[:origin], params[:destination]).trip
-	end
-
-	def all_trips
-		origin, destination = params[:origin], params[:destination]
-		render json: {
-			car: CarTrip.new(origin, destination).trip,
-			transit: TransitTrip.new(origin, destination).trip
-		}
 	end
 
 	private

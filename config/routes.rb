@@ -2,9 +2,8 @@ Rails.application.routes.draw do
 
 	root 'application#all_trips'
 
-	get 'car', 	to: 'application#car_trip', as: :car
-	get 'transit', to: 'application#transit_trips', as: :transit
-	get 'walk', to: 'application#walk_trip', as: :walk
+	get 'car', 	to: 'application#car', as: :car
+	get 'transit', to: 'application#transit', as: :transit
 
   # The priority is based upon order of creation: first created -> highest priority.
   # See how all your routes lay out with "rake routes".
