@@ -15,16 +15,21 @@ class Stop
     def arrival_time(stop, trip_id)
       puts "0 s: getting real time arrival data"
 
+      scheduled = stop['arrival'] / 1000
       time = Time.now
-      a = all_arrivals(stop).find { |arrival| arrival['tripId'] == trip_id}
-      puts "#{Time.now - time} s: got real time arrival data"
 
-      if a && a['predicted']
+      if Time.at(scheduled) - Time.now < 45.minutes
+        arrivals = all_arrivals(stop)
+        arrival = arrivals.find { |arrival| arrival['tripId'] == trip_id}
+        puts "#{Time.now - time} s: got real time arrival data"
+      end
+
+      if arrival && arrival['predicted']
         @real_time = true
-        a['predictedArrivalTime'] / 1000
+        arrival['predictedArrivalTime'] / 1000
       else
         @real_time = false
-        stop['arrival'] / 1000
+        scheduled
       end
     end
 

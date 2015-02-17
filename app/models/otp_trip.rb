@@ -2,23 +2,24 @@ class OTPTrip < Trip
 
 	def directions(legs)
 		dir_array = []
-		legs.each_with_index do |leg, i|
-			if leg['mode'] == 'WALK'
-				dir_array << {
-					mode: 'WALK',
-					from: [leg['from']['lat'], leg['from']['lon']],
-					to: [leg['to']['lat'], leg['to']['lon']],
-					next_mode: next_mode(legs, i)
-				}
-			else
-				dir_array << TransitLeg.new(leg, next_mode(legs, i))
-			end
+ 		legs.each { |leg| dir_array << Leg.new(leg) }
+
+		rtn_array = []
+		dir_array.each_with_index do |dir, i|
+			dir.prev_leg = prev_element(dir_array, i)
+			dir.prev_leg = next_element(dir_array, i)
+			rtn_array << dir
 		end
-		dir_array
+		rtn_array.each { |e| puts e.prev_leg, e.next_leg }
+		rtn_array
 	end
 
-	def next_mode(legs, i)
-		legs[i+1] ? legs[i+1]['mode'] : nil
+	def prev_element(arr, i)
+		i > 0 ? arr[i-1] : nil
+	end
+
+	def next_element(arr, i)
+		arr[i+1] ? arr[i+1] : nil
 	end
 
   def routes(origin, destination)
