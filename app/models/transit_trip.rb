@@ -19,8 +19,6 @@ class TransitTrip < OTPTrip
 		puts "0 s: building transit itinerary"
 		trip = Itinerary.new(itin)
 		puts "#{Time.now - time} s: done with transit itineraries"
-		puts trip.legs[1].prev_leg
-		puts trip.legs[1].next_leg
 		return trip
 	end
 end

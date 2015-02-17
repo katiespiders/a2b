@@ -3,16 +3,16 @@ require 'httparty'
 class Stop
   attr_accessor :time, :time_string
 
-  def initialize(stop, trip_id)
+  def initialize(stop, trip_id, user_arrival_time=nil)
     @name = stop['name']
     @coords = [stop['lat'], stop['lon']]
-    @time = arrival_time(stop, trip_id)
+    @time = bus_arrival_time(stop, trip_id)
     @time_string = Time.at(@time).strftime("%-I:%M %P")
     @delta = delta(stop)
   end
 
   private
-    def arrival_time(stop, trip_id)
+    def bus_arrival_time(stop, trip_id)
       puts "0 s: getting real time arrival data"
 
       scheduled = stop['arrival'] / 1000

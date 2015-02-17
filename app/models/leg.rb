@@ -1,8 +1,8 @@
 class Leg
-  attr_accessor :prev_leg, :next_leg
 
-  def initialize(otp_hash)
+  def initialize(otp_hash, prev=nil)
     @mode = otp_hash['mode']
+    @prev = prev
     if @mode == 'WALK'
       @from = [ otp_hash['from']['lat'], otp_hash['from']['lon'] ]
       @to = [ otp_hash['to']['lat'], otp_hash['to']['lon'] ]
