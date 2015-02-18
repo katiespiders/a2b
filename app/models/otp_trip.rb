@@ -43,12 +43,14 @@ class OTPTrip < Trip
 		puts "walk ends #{trip_ends}, trip middle #{trip_middle}, walk middle #{walk_middle}"
 		wait_time = trip_middle - transit_time - walk_middle
 		arrival_time = last_transit.end_time + legs.last.duration
+		trip_time = arrival_time - Time.now.to_i
 
 		h = {
 			walk_time: walk_time,
 			transit_time: transit_time,
 			wait_time: wait_time,
-			arrival_time: arrival_time
+			trip_time: trip_time,
+			arrival_time: Time.at(arrival_time).strftime("%-I:%M %P")
 		}
 
 		puts h
