@@ -9,36 +9,41 @@ class Stop
     @trip_id = trip_id
     @name = stop['name']
     @coords = [stop['lat'], stop['lon']]
-    @scheduled = stop['arrival'] / 1000
-    @time = bus_arrival_time(stop) || @scheduled
-    puts "scheduled #{Time.at @scheduled}, actual #{Time.at @time}, realtime #{@realtime}"
+    @time = bus_arrival_time(stop)
+    puts "f"*80, @time
     @time_string = Time.at(@time).strftime("%-I:%M %P")
     @delta = delta(stop)
   end
 
   private
     def bus_arrival_time(stop)
-      puts "0 s: getting real time arrival data"
       time = Time.now
-
-      if Time.at(@scheduled) - Time.now < 45.minutes
+      scheduled = stop['arrival'] / 1000
+      if Time.at(scheduled) - Time.now < 45.minutes
         arrivals = all_arrivals(stop)
         puts "#{Time.now - time} s: got real time arrival data"
         if @route
-          puts "!"*80, @route
           trip_by_route(arrivals)
         else
-          trip_by_id(arrivals)
+          @scheduled = scheduled
+          trip_by_id(arrivals) || @scheduled
         end
+      else
+        @realtime = false
+        @scheduled = scheduled
       end
     end
 
     def trip_by_route(arrivals)
       candidates = arrivals.select { |arrival| arrival['routeShortName'] == @route }
       best = best_arrival(candidates)
+      puts "@"*80, best
       @trip_id = best['tripId']
       @realtime = best['predicted']
-      realtime_arrival(best)
+      @scheduled = best['scheduledArrivalTime'] / 1000
+      ra = realtime_arrival(best)
+      puts "RA"*40, ra
+      ra
     end
 
     def trip_by_id(arrivals)
@@ -48,7 +53,6 @@ class Stop
         realtime_arrival(arrival)
       else
         @realtime = false
-        @scheduled
       end
     end
 
@@ -80,7 +84,7 @@ class Stop
       if arrival && arrival['predicted']
         arrival['predictedArrivalTime'] / 1000
       else
-        @scheduled
+        arrival['scheduledArrivalTime'] / 1000
       end
     end
 end
