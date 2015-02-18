@@ -1,4 +1,5 @@
 class Leg
+  attr_accessor :route
 
   def initialize(otp_hash, prev=nil)
     @mode = otp_hash['mode']
@@ -9,23 +10,20 @@ class Leg
       @duration = otp_hash['duration']
     else
       @route = otp_hash['route']
+      @route += 'E' if otp_hash['tripShortName'] == 'EXPRESS'
       @headsign = otp_hash['headsign']
+      @agency = otp_hash['agencyId']
       @continuation = otp_hash['interlineWithPreviousLeg']
       realtime_arrival(otp_hash)
     end
   end
 
   private
-    def realtime_arrival(hsh)
-      trip_id = '1_' + hsh['tripId']
-
-      @stops = {
-        on: Stop.new(hsh['from'], trip_id),
-        off: Stop.new(hsh['to'], trip_id)
-      }
-
-      @duration = @stops[:off].time - @stops[:on].time
-      @start_time = @stops[:on].time_string
-      @end_time = @stops[:off].time_string
+    def realtime_arrival(otp_hash)
+      @board = Stop.new(otp_hash['from'], user_arrival_time: Time.now, route: @route)
+      @alight = Stop.new(otp_hash['to'], trip_id: @board.trip_id)
+      @duration = @alight.time - @board.time
+      @start_time = @board.time_string
+      @end_time = @alight.time_string
     end
 end
