@@ -1,5 +1,5 @@
 class Leg
-  attr_accessor :route
+  attr_accessor :route, :mode, :duration, :start_time, :end_time
 
   def initialize(otp_hash, prev=nil)
     @mode = otp_hash['mode']
@@ -20,10 +20,16 @@ class Leg
 
   private
     def realtime_arrival(otp_hash)
+      @duration = ( otp_hash['endTime'] - otp_hash['startTime'] ) / 1000
       @board = Stop.new(otp_hash['from'], user_arrival_time: Time.now, route: @route)
       @alight = Stop.new(otp_hash['to'], trip_id: @board.trip_id)
-      @duration = @alight.time - @board.time
-      @start_time = @board.time_string
-      @end_time = @alight.time_string
+      @start_time = @board.time
+      @end_time = @board.time + @duration
+      @start_display = time_string(@start_time)
+      @end_display = time_string(@end_time)
+    end
+
+    def time_string(time)
+      Time.at(time).strftime("%-I:%M %P")
     end
 end

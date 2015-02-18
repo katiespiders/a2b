@@ -42,7 +42,8 @@ class CarTrip
   	 		exterior: 		car['exterior'] == 'GOOD',
   			interior: 		car['interior'] == 'GOOD',
   			gas: 					car['fuel'],
-  			name: 				car['name']	}
+  			name: 				car['name']
+      } if car
   	end
 
     def address_str(address)

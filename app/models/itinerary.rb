@@ -5,5 +5,6 @@ class Itinerary < TransitTrip
     @xfers =          itin['transfers']
     @fare =           itin['fare']['fare']['regular']['cents'] if itin['fare']
     @legs =           directions(itin['legs'])
+    @summary =        summary(@legs)
   end
 end

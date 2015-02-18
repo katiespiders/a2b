@@ -1,7 +1,7 @@
 require 'httparty'
 
 class Stop
-  attr_accessor :time, :time_string, :trip_id
+  attr_accessor :time, :trip_id
 
   def initialize(stop, user_arrival_time: nil, route: nil, trip_id: nil)
     @user_arrival_time = user_arrival_time
@@ -10,8 +10,6 @@ class Stop
     @name = stop['name']
     @coords = [stop['lat'], stop['lon']]
     @time = bus_arrival_time(stop)
-    puts "f"*80, @time
-    @time_string = Time.at(@time).strftime("%-I:%M %P")
     @delta = delta(stop)
   end
 
@@ -37,13 +35,10 @@ class Stop
     def trip_by_route(arrivals)
       candidates = arrivals.select { |arrival| arrival['routeShortName'] == @route }
       best = best_arrival(candidates)
-      puts "@"*80, best
       @trip_id = best['tripId']
       @realtime = best['predicted']
       @scheduled = best['scheduledArrivalTime'] / 1000
-      ra = realtime_arrival(best)
-      puts "RA"*40, ra
-      ra
+      realtime_arrival(best)
     end
 
     def trip_by_id(arrivals)
