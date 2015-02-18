@@ -2,20 +2,21 @@ class OTPTrip < Trip
 
 	def directions(legs)
 		dir_array = []
-		legs.each_with_index do |leg, i|
-			leg_obj = i > 0 ? Leg.new(leg, dir_array[i-1]) : Leg.new(leg)
-			dir_array << leg_obj
-		end
+		first_transit_found = false
+		xfer = false
 
+		legs.each_with_index do |leg, i|
+			unless leg['mode'] == 'WALK'
+				xfer = first_transit_found
+				first_transit_found = true
+			end
+
+			start_time = i == 0 ? Time.now.to_i + 5.minutes : dir_array[i-1].end_time
+			puts "#{leg['mode']} leg #{i} starts at #{Time.at(start_time)}"
+
+			dir_array << Leg.new(leg, start_time, xfer: xfer)
+		end
 		dir_array
-		# rtn_array = []
-		# dir_array.each_with_index do |dir, i|
-		# 	dir.prev_leg = i > 0 ? dir_array[i-1] : nil
-		# 	# dir.next_leg = dir_array[i+1]
-		# 	rtn_array << dir
-		# end
-		# rtn_array.each { |e| puts e.prev_leg, e.next_leg }
-		# rtn_array
 	end
 
 	def summary(legs)

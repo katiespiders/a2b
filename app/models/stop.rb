@@ -3,13 +3,14 @@ require 'httparty'
 class Stop
   attr_accessor :time, :trip_id
 
-  def initialize(stop, user_arrival_time: nil, route: nil, trip_id: nil)
+  def initialize(stop, user_arrival_time: nil, route: nil, xfer: false, continuation: false, trip_id: nil)
     @user_arrival_time = user_arrival_time
     @route = route
     @trip_id = trip_id
+    puts @route ? "getting on #{@route} at #{Time.at @user_arrival_time}, xfer? #{xfer}, continuation? #{continuation}" : "getting stop by trip id #{@trip_id}"
     @name = stop['name']
     @coords = [stop['lat'], stop['lon']]
-    @time = bus_arrival_time(stop)
+    @time = (xfer || continuation) ? next_scheduled_arrival(stop) : bus_arrival_time(stop)
     @delta = delta(stop)
   end
 
@@ -52,10 +53,23 @@ class Stop
     end
 
     def best_arrival(candidates)
-      earliest_time = @user_arrival_time + 3.minutes # BUG ALERT!
-
       candidates.sort_by! { |candidate| realtime_arrival(candidate) }
-      candidates.find { |candidate| Time.at(realtime_arrival(candidate)) > earliest_time }
+      candidates.find { |candidate| realtime_arrival(candidate) > @user_arrival_time + 3.minutes }
+    end
+
+    def next_scheduled_arrival(stop)
+      stop_id = '1_' + stop['stopId']['id']
+      url = "http://api.pugetsound.onebusaway.org/api/where/schedule-for-stop/#{stop_id}.json?key=#{ENV['OBA_KEY']}"
+      stop_data = HTTParty.get(url)['data']
+      stop_routes = stop_data['references']['routes']
+      route_reference = stop_routes.find { |route| route['shortName'] == @route }
+      route_id = route_reference['id']
+      all_routes = stop_data['entry']['stopRouteSchedules']
+      route_info = all_routes.find { |route| route['routeId'] == route_id }
+      route_stops = route_info['stopRouteDirectionSchedules'][0]['scheduleStopTimes']
+      route_stops.sort_by! { |stop| stop['arrivalTime'] }
+      r = route_stops.find { |stop| stop['arrivalTime']/1000 > @user_arrival_time + 3.minutes }
+      r['arrivalTime'] / 1000
     end
 
     def all_arrivals(stop)
@@ -65,14 +79,18 @@ class Stop
     end
 
     def delta(stop)
+      puts "s"*80, stop
       delay = @time - stop['arrival'] / 1000
-      if delay.abs < 60
+      d = if delay.abs < 60
         @realtime ? 'on time' : 'supposedly'
       elsif delay < 0
         "#{delay.abs / 60} minutes early"
       else
         "#{delay / 60} minutes late"
       end
+      puts "d"*80, d
+      d
+
     end
 
     def realtime_arrival(arrival)
