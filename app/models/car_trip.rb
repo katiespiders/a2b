@@ -20,7 +20,10 @@ class CarTrip
     end
 
     def cars_available
-      HTTParty.get(url)['placemarks']
+      puts 'getting cars'
+      h = HTTParty.get(url)['placemarks']
+      puts h
+      h
     end
 
     def url
