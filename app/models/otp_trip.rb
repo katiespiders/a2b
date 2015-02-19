@@ -60,7 +60,7 @@ class OTPTrip < Trip
 
 	def routes(origin, destination)
 		time = Time.now
-		url = 'http://localhost:8080/' # Rails.env.production? ? 'http://otp.seattle-a2b.com/' :
+		url = Rails.env.production? ? 'http://otp.seattle-a2b.com:8080' : 'http://localhost:8080/' 
 		url += "otp/routers/default/plan?fromPlace=#{origin}&toPlace=#{destination}"
 		puts "0 s: finding transit routes"
 		rts = HTTParty.get(url)['plan']
