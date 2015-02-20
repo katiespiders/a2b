@@ -4,9 +4,9 @@ class CarTrip
   def initialize(origin)
     @origin = origin
     time = Time.now
-    puts "0 s: finding nearest car"
+    logger.debug "0 s: finding nearest car"
     @car = car_hash(cars_nearby[0])
-    puts "#{Time.now - time} s: found car"
+    logger.debug "#{Time.now - time} s: found car"
   end
 
   private

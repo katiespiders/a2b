@@ -12,7 +12,7 @@ class OTPTrip < Trip
 			end
 
 			start_time = i == 0 ? Time.now.to_i + 5.minutes : dir_array[i-1].end_time
-			puts "#{leg['mode']} leg #{i} starts at #{Time.at(start_time)}"
+			logger.debug "#{leg['mode']} leg #{i} starts at #{Time.at(start_time)}"
 
 			dir_array << Leg.new(leg, start_time, xfer: xfer)
 		end
@@ -24,7 +24,7 @@ class OTPTrip < Trip
 		first_walk, last_walk, first_transit, last_transit = nil, nil, nil, nil
 
 		legs.each do |leg|
-			puts leg.mode, leg.route
+			logger.debug leg.mode, leg.route
 			if leg.mode == 'WALK'
 				first_walk ||= leg
 				last_walk = leg
@@ -36,12 +36,12 @@ class OTPTrip < Trip
 			end
 		end
 
-		puts "first bus #{first_transit.start_time} to #{first_transit.end_time}"
-		puts "last bus #{last_transit.start_time} to #{last_transit.end_time}"
+		logger.debug "first bus #{first_transit.start_time} to #{first_transit.end_time}"
+		logger.debug "last bus #{last_transit.start_time} to #{last_transit.end_time}"
 		trip_ends = first_walk.duration + last_walk.duration
 		trip_middle = last_transit.end_time - first_transit.start_time
 		walk_middle = walk_time - trip_ends
-		puts "walk ends #{trip_ends}, trip middle #{trip_middle}, walk middle #{walk_middle}"
+		logger.debug "walk ends #{trip_ends}, trip middle #{trip_middle}, walk middle #{walk_middle}"
 		wait_time = trip_middle - transit_time - walk_middle
 		arrival_time = last_transit.end_time + legs.last.duration
 		trip_time = arrival_time - Time.now.to_i
@@ -54,17 +54,17 @@ class OTPTrip < Trip
 			arrival_time: Time.at(arrival_time).strftime("%-I:%M %P")
 		}
 
-		puts h
+		logger.debug h
 		h
 	end
 
 	def routes(origin, destination)
 		time = Time.now
-		url = Rails.env.production? ? 'http://otp.seattle-a2b.com:8080/' : 'http://localhost:8080/' 
+		url = Rails.env.production? ? 'http://otp.seattle-a2b.com:8080/' : 'http://localhost:8080/'
 		url += "otp/routers/default/plan?fromPlace=#{origin}&toPlace=#{destination}"
-		puts "0 s: finding transit routes"
+		logger.debug "0 s: finding transit routes"
 		rts = HTTParty.get(url)['plan']
-		puts "#{Time.now - time} s: done with transit routes"
+		logger.debug "#{Time.now - time} s: done with transit routes"
 		rts
 	end
 end

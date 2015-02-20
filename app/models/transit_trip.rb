@@ -8,8 +8,8 @@ class TransitTrip < OTPTrip
 
 	def itineraries(itin) # all itineraries returned by OTP
 		time = Time.now
-		puts "0 s: building transit itinerary"
+		logger.debug "0 s: building transit itinerary"
 		@trip = Itinerary.new(itin)
-		puts "#{Time.now - time} s: done with transit itineraries"
+		logger.debug "#{Time.now - time} s: done with transit itineraries"
 	end
 end
