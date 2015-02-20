@@ -88,7 +88,7 @@ class Stop
       else
         "#{delay / 60} minutes late"
       end
-      Rails.logger.info "d"*80, d
+      Rails.logger.info d
       d
 
     end
