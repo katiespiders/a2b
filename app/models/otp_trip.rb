@@ -24,7 +24,6 @@ class OTPTrip < Trip
 		first_walk, last_walk, first_transit, last_transit = nil, nil, nil, nil
 
 		legs.each do |leg|
-			Rails.logger.info leg.mode, leg.route
 			if leg.mode == 'WALK'
 				first_walk ||= leg
 				last_walk = leg
