@@ -73,13 +73,15 @@ class Stop
     end
 
     def all_arrivals(stop)
-      stop_id = stop['stopId'].gsub('ST:', '1_')
+      stop_id = Rails.env.production? ? stop['stopId'].gsub('ST:', '1_') : '1_' + stop['stopId']['id'] # I don't have the faintest idea why this is necessary
       url = "http://api.pugetsound.onebusaway.org/api/where/arrivals-and-departures-for-stop/#{stop_id}.json?key=#{ENV['OBA_KEY']}"
       Rails.logger.info url
       HTTParty.get(url)['data']['entry']['arrivalsAndDepartures']
     end
 
     def delta(stop)
+      Rails.logger.info Time.at @time
+      Rails.logger.info Time.at stop['arrival'] / 1000
       delay = @time - stop['arrival'] / 1000
       d = if delay.abs < 60
         @realtime ? 'on time' : 'supposedly'
