@@ -58,7 +58,7 @@ class Stop
     end
 
     def next_scheduled_arrival(stop)
-      stop_id = '1_' + stop['stopId']['id']
+      stop_id = stop['stopId'].gsub('ST:', '1_')
       url = "http://api.pugetsound.onebusaway.org/api/where/schedule-for-stop/#{stop_id}.json?key=#{ENV['OBA_KEY']}"
       stop_data = HTTParty.get(url)['data']
       stop_routes = stop_data['references']['routes']
