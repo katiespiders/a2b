@@ -8,8 +8,8 @@ class TransitTrip < OTPTrip
 
 	def itineraries(itin) # all itineraries returned by OTP
 		time = Time.now
-		Rails.logger.error "0 s: building transit itinerary"
+		Rails.logger.info "0 s: building transit itinerary"
 		@trip = Itinerary.new(itin)
-		Rails.logger.error "#{Time.now - time} s: done with transit itineraries"
+		Rails.logger.info "#{Time.now - time} s: done with transit itineraries"
 	end
 end

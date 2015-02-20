@@ -7,12 +7,12 @@ class Stop
     @user_arrival_time = user_arrival_time
     @route = route
     @trip_id = trip_id
-    Rails.logger.error @route ? "getting on #{@route} at #{Time.at @user_arrival_time}, xfer? #{xfer}, continuation? #{continuation}" : "getting stop by trip id #{@trip_id}"
+    Rails.logger.info @route ? "getting on #{@route} at #{Time.at @user_arrival_time}, xfer? #{xfer}, continuation? #{continuation}" : "getting stop by trip id #{@trip_id}"
     @name = stop['name']
     @coords = [stop['lat'], stop['lon']]
     @time = (xfer || continuation) ? next_scheduled_arrival(stop) : bus_arrival_time(stop)
     @delta = delta(stop)
-    Rails.logger.error "stop.rb line 15: stop = #{stop}"
+    Rails.logger.info "stop.rb line 15: stop = #{stop}"
   end
 
   private
@@ -20,9 +20,9 @@ class Stop
       time = Time.now
       scheduled = stop['arrival'] / 1000
       if Time.at(scheduled) - Time.now < 45.minutes
-        Rails.logger.error "stop.rb line 23: stop = #{stop}"
+        Rails.logger.info "stop.rb line 23: stop = #{stop}"
         arrivals = all_arrivals(stop)
-        Rails.logger.error "#{Time.now - time} s: got real time arrival data"
+        Rails.logger.info "#{Time.now - time} s: got real time arrival data"
         if @route
           trip_by_route(arrivals)
         else
@@ -75,14 +75,14 @@ class Stop
     end
 
     def all_arrivals(stop)
-      Rails.logger.error "stop.rb line 78: stop = #{stop}"
+      Rails.logger.info "stop.rb line 78: stop = #{stop}"
       stop_id = '1_' + stop['stopId']['id']
       url = "http://api.pugetsound.onebusaway.org/api/where/arrivals-and-departures-for-stop/#{stop_id}.json?key=#{ENV['OBA_KEY']}"
       HTTParty.get(url)['data']['entry']['arrivalsAndDepartures']
     end
 
     def delta(stop)
-      Rails.logger.error "s"*80, stop
+      Rails.logger.info "s"*80, stop
       delay = @time - stop['arrival'] / 1000
       d = if delay.abs < 60
         @realtime ? 'on time' : 'supposedly'
@@ -91,7 +91,7 @@ class Stop
       else
         "#{delay / 60} minutes late"
       end
-      Rails.logger.error "d"*80, d
+      Rails.logger.info "d"*80, d
       d
 
     end

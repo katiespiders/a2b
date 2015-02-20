@@ -12,7 +12,7 @@ class OTPTrip < Trip
 			end
 
 			start_time = i == 0 ? Time.now.to_i + 5.minutes : dir_array[i-1].end_time
-			Rails.logger.error "#{leg['mode']} leg #{i} starts at #{Time.at(start_time)}"
+			Rails.logger.info "#{leg['mode']} leg #{i} starts at #{Time.at(start_time)}"
 
 			dir_array << Leg.new(leg, start_time, xfer: xfer)
 		end
@@ -24,7 +24,7 @@ class OTPTrip < Trip
 		first_walk, last_walk, first_transit, last_transit = nil, nil, nil, nil
 
 		legs.each do |leg|
-			Rails.logger.error leg.mode, leg.route
+			Rails.logger.info leg.mode, leg.route
 			if leg.mode == 'WALK'
 				first_walk ||= leg
 				last_walk = leg
@@ -36,12 +36,12 @@ class OTPTrip < Trip
 			end
 		end
 
-		Rails.logger.error "first bus #{first_transit.start_time} to #{first_transit.end_time}"
-		Rails.logger.error "last bus #{last_transit.start_time} to #{last_transit.end_time}"
+		Rails.logger.info "first bus #{first_transit.start_time} to #{first_transit.end_time}"
+		Rails.logger.info "last bus #{last_transit.start_time} to #{last_transit.end_time}"
 		trip_ends = first_walk.duration + last_walk.duration
 		trip_middle = last_transit.end_time - first_transit.start_time
 		walk_middle = walk_time - trip_ends
-		Rails.logger.error "walk ends #{trip_ends}, trip middle #{trip_middle}, walk middle #{walk_middle}"
+		Rails.logger.info "walk ends #{trip_ends}, trip middle #{trip_middle}, walk middle #{walk_middle}"
 		wait_time = trip_middle - transit_time - walk_middle
 		arrival_time = last_transit.end_time + legs.last.duration
 		trip_time = arrival_time - Time.now.to_i
@@ -54,7 +54,7 @@ class OTPTrip < Trip
 			arrival_time: Time.at(arrival_time).strftime("%-I:%M %P")
 		}
 
-		Rails.logger.error h
+		Rails.logger.info h
 		h
 	end
 
@@ -62,9 +62,9 @@ class OTPTrip < Trip
 		time = Time.now
 		url = Rails.env.production? ? 'http://otp.seattle-a2b.com:8080/' : 'http://localhost:8080/'
 		url += "otp/routers/default/plan?fromPlace=#{origin}&toPlace=#{destination}"
-		Rails.logger.error "0 s: finding transit routes"
+		Rails.logger.info "0 s: finding transit routes"
 		rts = HTTParty.get(url)['plan']
-		Rails.logger.error "#{Time.now - time} s: done with transit routes"
+		Rails.logger.info "#{Time.now - time} s: done with transit routes"
 		rts
 	end
 end
