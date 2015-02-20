@@ -13,7 +13,7 @@ class ApplicationController < ActionController::API
 
 	private
 		def set_cors_headers
-			headers['Access-Control-Allow-Origin'] = Rails.env.development? ? 'http://localhost:9393' : 'http://seattle-a2b.com'
+			headers['Access-Control-Allow-Origin'] = '*'
 			headers['Access-Control-Allow-Methods'] = 'GET'
 		end
 end
