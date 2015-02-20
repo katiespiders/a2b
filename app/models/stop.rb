@@ -75,6 +75,7 @@ class Stop
     def all_arrivals(stop)
       stop_id = stop['stopId'].gsub('ST:', '1_')
       url = "http://api.pugetsound.onebusaway.org/api/where/arrivals-and-departures-for-stop/#{stop_id}.json?key=#{ENV['OBA_KEY']}"
+      Rails.logger.info url
       HTTParty.get(url)['data']['entry']['arrivalsAndDepartures']
     end
 
