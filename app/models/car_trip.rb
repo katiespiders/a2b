@@ -4,9 +4,9 @@ class CarTrip
   def initialize(origin)
     @origin = origin
     time = Time.now
-    Rails.logger.error.debug "0 s: finding nearest car"
+    Rails.logger.error "0 s: finding nearest car"
     @car = car_hash(cars_nearby[0])
-    Rails.logger.error.debug "#{Time.now - time} s: found car"
+    Rails.logger.error "#{Time.now - time} s: found car"
   end
 
   private

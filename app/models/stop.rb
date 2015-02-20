@@ -7,7 +7,7 @@ class Stop
     @user_arrival_time = user_arrival_time
     @route = route
     @trip_id = trip_id
-    Rails.logger.error.debug @route ? "getting on #{@route} at #{Time.at @user_arrival_time}, xfer? #{xfer}, continuation? #{continuation}" : "getting stop by trip id #{@trip_id}"
+    Rails.logger.error @route ? "getting on #{@route} at #{Time.at @user_arrival_time}, xfer? #{xfer}, continuation? #{continuation}" : "getting stop by trip id #{@trip_id}"
     @name = stop['name']
     @coords = [stop['lat'], stop['lon']]
     @time = (xfer || continuation) ? next_scheduled_arrival(stop) : bus_arrival_time(stop)
@@ -20,7 +20,7 @@ class Stop
       scheduled = stop['arrival'] / 1000
       if Time.at(scheduled) - Time.now < 45.minutes
         arrivals = all_arrivals(stop)
-        Rails.logger.error.debug "#{Time.now - time} s: got real time arrival data"
+        Rails.logger.error "#{Time.now - time} s: got real time arrival data"
         if @route
           trip_by_route(arrivals)
         else
@@ -79,7 +79,7 @@ class Stop
     end
 
     def delta(stop)
-      Rails.logger.error.debug "s"*80, stop
+      Rails.logger.error "s"*80, stop
       delay = @time - stop['arrival'] / 1000
       d = if delay.abs < 60
         @realtime ? 'on time' : 'supposedly'
@@ -88,7 +88,7 @@ class Stop
       else
         "#{delay / 60} minutes late"
       end
-      Rails.logger.error.debug "d"*80, d
+      Rails.logger.error "d"*80, d
       d
 
     end
