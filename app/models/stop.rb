@@ -12,6 +12,7 @@ class Stop
     @coords = [stop['lat'], stop['lon']]
     @time = (xfer || continuation) ? next_scheduled_arrival(stop) : bus_arrival_time(stop)
     @delta = delta(stop)
+    Rails.logger.info "STOP.RB LINE 15", stop
   end
 
   private
@@ -19,6 +20,7 @@ class Stop
       time = Time.now
       scheduled = stop['arrival'] / 1000
       if Time.at(scheduled) - Time.now < 45.minutes
+        Rails.logger.info "STOP.RB LINE 23", stop
         arrivals = all_arrivals(stop)
         Rails.logger.error "#{Time.now - time} s: got real time arrival data"
         if @route
@@ -73,6 +75,7 @@ class Stop
     end
 
     def all_arrivals(stop)
+      Rails.logger.info "STOP.RB LINE 78", stop
       stop_id = '1_' + stop['stopId']['id']
       url = "http://api.pugetsound.onebusaway.org/api/where/arrivals-and-departures-for-stop/#{stop_id}.json?key=#{ENV['OBA_KEY']}"
       HTTParty.get(url)['data']['entry']['arrivalsAndDepartures']
