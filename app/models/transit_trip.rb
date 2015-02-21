@@ -1,4 +1,4 @@
-class TransitTrip < OTPTrip
+class TransitTrip < Trip
 	attr_accessor :trip
 
 	def initialize(origin, destination)
