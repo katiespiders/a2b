@@ -1,7 +1,5 @@
 Rails.application.routes.draw do
 
-	root 'application#all_trips'
-
 	get 'car', 	to: 'application#car', as: :car
 	get 'transit', to: 'application#transit', as: :transit
 

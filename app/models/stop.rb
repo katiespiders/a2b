@@ -58,8 +58,7 @@ class Stop
     end
 
     def next_scheduled_arrival(stop)
-      stop_id = stop['stopId'].gsub('ST:', '1_')
-      url = "http://api.pugetsound.onebusaway.org/api/where/schedule-for-stop/#{stop_id}.json?key=#{ENV['OBA_KEY']}"
+      url = "http://api.pugetsound.onebusaway.org/api/where/schedule-for-stop/#{stop_id(stop)}.json?key=#{ENV['OBA_KEY']}"
       stop_data = HTTParty.get(url)['data']
       stop_routes = stop_data['references']['routes']
       route_reference = stop_routes.find { |route| route['shortName'] == @route }
@@ -73,8 +72,7 @@ class Stop
     end
 
     def all_arrivals(stop)
-      stop_id = Rails.env.production? ? stop['stopId'].gsub('ST:', '1_') : '1_' + stop['stopId']['id'] # I don't have the faintest idea why this is necessary
-      url = "http://api.pugetsound.onebusaway.org/api/where/arrivals-and-departures-for-stop/#{stop_id}.json?key=#{ENV['OBA_KEY']}"
+      url = "http://api.pugetsound.onebusaway.org/api/where/arrivals-and-departures-for-stop/#{stop_id(stop)}.json?key=#{ENV['OBA_KEY']}"
       Rails.logger.info url
       HTTParty.get(url)['data']['entry']['arrivalsAndDepartures']
     end
@@ -101,5 +99,9 @@ class Stop
       else
         arrival['scheduledArrivalTime'] / 1000
       end
+    end
+
+    def stop_id(stop)
+      Rails.env.production? ? stop['stopId'].gsub('ST:', '1_') : '1_' + stop['stopId']['id'] # I don't have the faintest idea why this is necessary
     end
 end
