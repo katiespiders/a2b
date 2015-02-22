@@ -1,9 +1,10 @@
 class Trip
-	attr_accessor :legs, :summary
+	attr_accessor :itineraries
 
 	def initialize(origin, destination) # lat,lng strings
-		routes = routes(origin, destination)
-		itinerary(routes[0])
+		@itineraries = []
+		routes = routes(origin, destination) # calls Open Trip Planner API
+		routes.each { |route| @itineraries << itinerary(route) }
 	end
 
 	private
@@ -13,10 +14,10 @@ class Trip
 
 			@xfers = itin['transfers']
 			@fare = itin['fare'] ? itin['fare']['fare']['regular']['cents'] : nil
-			@legs = directions(itin['legs'])
-			@summary = summarize(@legs)
+			@legs = directions(itin['legs']) # array of Leg objects
+			@summary = summarize(@legs) # summary of entire trip
 
-			Rails.logger.info "#{Time.now - time} s: done with transit itineraries"
+			Rails.logger.info "#{Time.now - time} s: done with transit itinerary"
 		end
 
 		def directions(legs)
@@ -49,7 +50,7 @@ class Trip
 			arrival_time = legs.last.end_time
 			trip_time = arrival_time - Time.now.to_i
 
-			h = {
+			hsh = {
 				walk_time: walk_time,
 				transit_time: transit_time,
 				wait_time: wait_time,
@@ -57,8 +58,8 @@ class Trip
 				arrival_time: Time.at(arrival_time).strftime("%-I:%M %P")
 			}
 
-			Rails.logger.info h
-			h
+			Rails.logger.info hsh
+			hsh
 		end
 
 		def routes(origin, destination)
