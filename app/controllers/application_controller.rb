@@ -4,7 +4,7 @@ class ApplicationController < ActionController::API
 	before_filter :set_cors_headers
 
 	def car
-		render json: CarTrip.new(params[:origin]).car
+		render json: CarTrip.new(params[:origin]).nearest
 	end
 
 	def transit

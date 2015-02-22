@@ -1,11 +1,11 @@
 class CarTrip
-  attr_accessor :car
+  attr_accessor :nearest
 
   def initialize(origin)
     @origin = origin
     time = Time.now
     Rails.logger.info "0 s: finding nearest car"
-    @car = car_hash(cars_nearby[0])
+    @nearest = cars_nearby
     Rails.logger.info "#{Time.now - time} s: found car"
   end
 
@@ -16,7 +16,8 @@ class CarTrip
         car['distance'] = distance(coords(car))
         cars_nearby << car if car['distance'] < 1.6
       end
-      cars_nearby.sort_by { |car| car['distance'] }
+      cars_nearby.sort_by! { |car| car['distance'] }
+      cars_nearby.collect { |car| car_hash(car) }
     end
 
     def cars_available
