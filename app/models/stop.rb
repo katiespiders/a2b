@@ -1,13 +1,13 @@
 require 'httparty'
 
 class Stop
-  attr_accessor :arrival_time, :trip_id
+  attr_accessor :arrival_time
 
   def initialize(stop, user_arrival_time: nil, route: nil, get_oba: false)
     @name = stop['name']
     @coords = [stop['lat'], stop['lon']]
 
-    if route
+    if route # route is passed in only for boarding stop
       @route = route
       @earliest_time = user_arrival_time + 3.minutes
 
@@ -63,7 +63,7 @@ class Stop
       @realtime = false
       stop_data = stop_schedule(stop)
       route_schedule = route_stops(stop_data)
-      next_arrival = route_schedule.find { |stop| stop['arrivalTime']/1000 > @earliest_time } # soonest viable (scheduled) arrival
+      next_arrival = route_schedule.find { |stop| stop['arrivalTime']/1000 > @earliest_time }
       next_arrival ||= route_schedule[0] # if none before midnight, gets first arrival of the day; bug when actual next day's schedule is different.
       @scheduled_time = next_arrival['arrivalTime'] / 1000
     end
@@ -76,6 +76,10 @@ class Stop
       stop_data = HTTParty.get(url)['data']
       Rails.logger.info "#{Time.now - time} s: got schedule"
       stop_data
+    end
+
+    def stop_id(stop)
+      Rails.env.production? ? stop['stopId'].gsub('ST:', '1_') : '1_' + stop['stopId']['id'] # I don't have the faintest idea why this is necessary
     end
 
     def route_stops(stop_data)
@@ -102,9 +106,5 @@ class Stop
       end
 
       "(#{delay_string})"
-    end
-
-    def stop_id(stop)
-      Rails.env.production? ? stop['stopId'].gsub('ST:', '1_') : '1_' + stop['stopId']['id'] # I don't have the faintest idea why this is necessary
     end
 end
