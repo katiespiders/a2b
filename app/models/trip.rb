@@ -41,12 +41,14 @@ class Trip
 			xfer = false
 			first_transit_index = nil
 
-			legs.each_with_index do |leg, i|
-				first_transit_index ||= i unless leg['mode'] == 'WALK'
+			legs.each_with_index do |leg_hash, i|
+				first_transit_index ||= i unless leg_hash['mode'] == 'WALK'
 				start_time = i == 0 ? Time.now.to_i + 5.minutes : dir_array[i-1].end_time
-				Rails.logger.debug "leg #{i} (#{leg['mode']}) starts at #{Time.at(start_time).strftime("%-I:%M %P")}"
+				Rails.logger.debug "leg #{i} (#{leg_hash['mode']}) starts at #{Time.at(start_time).strftime("%-I:%M %P")}"
 
-				dir_array << Leg.new(leg, start_time, xfer, i == first_transit_index)
+				next_leg_hash = legs[i+1] if i<legs.length-1
+
+				dir_array << Leg.new(leg_hash, next_leg_hash, i == first_transit_index, start_time) unless leg_hash['interlineWithPreviousLeg']
 				end
 			dir_array
 		end
