@@ -1,7 +1,7 @@
 class Leg
   attr_accessor :route, :mode, :duration, :start_time, :end_time, :xfer
 
-  def initialize(otp_hash, start_time, xfer: false)
+  def initialize(otp_hash, start_time, xfer, first_transit)
     @mode = otp_hash['mode']
     @start_time = start_time
 
@@ -17,17 +17,17 @@ class Leg
       @agency = otp_hash['agencyId']
       @continuation = otp_hash['interlineWithPreviousLeg']
       @xfer = @continuation ? false : xfer
-      realtime_arrival(otp_hash)
+      realtime_arrival(otp_hash, first_transit)
     end
   end
 
   private
-    def realtime_arrival(otp_hash)
-      @duration = ( otp_hash['endTime'] - otp_hash['startTime'] ) / 1000 # scheduled duration of trip
-      @board = Stop.new(otp_hash['from'], user_arrival_time: @start_time, route: @route, xfer: @xfer, continuation: @continuation) # board soonest viable arrival of given route; does not use trip id returned by OTP as that may not be the soonest viable arrival
-      @alight = Stop.new(otp_hash['to'], trip_id: @board.trip_id) # remain on same bus (by trip id)
-      @start_time = @board.time
-      @end_time = @board.time + @duration # actual start time plus scheduled duration of trip
+    def realtime_arrival(otp_hash, first_transit)
+      @duration = (otp_hash['endTime'] - otp_hash['startTime']) / 1000
+      @board = Stop.new(otp_hash['from'], user_arrival_time: @start_time, route: @route, get_oba: first_transit)
+      @alight = Stop.new(otp_hash['to'])
+      @start_time = @board.arrival_time
+      @end_time = @start_time + @duration
       @start_display = time_string(@start_time)
       @end_display = time_string(@end_time)
     end

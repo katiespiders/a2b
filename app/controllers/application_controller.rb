@@ -8,7 +8,7 @@ class ApplicationController < ActionController::API
 	end
 
 	def transit
-		render json: Trip.new(params[:origin], params[:destination])
+		render json: Trip.new(params[:origin], params[:destination]).best
 	end
 
 	private
