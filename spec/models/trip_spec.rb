@@ -11,7 +11,6 @@ describe 'transit trip' do
       @legs.each_with_index do |leg, i|
         puts "leg #{i} (#{leg.mode}): #{Time.at(leg.start_time)} to #{Time.at(leg.end_time)} (#{leg.duration/60} minutes)"
       end
-
     end
   end
 
