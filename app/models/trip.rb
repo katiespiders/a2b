@@ -37,6 +37,7 @@ class Trip
 		end
 
 		def directions(legs)
+			Rails.logger.info "trip of #{legs.length} legs"
 			dir_array = []
 			xfer = false
 			first_transit_index = nil
