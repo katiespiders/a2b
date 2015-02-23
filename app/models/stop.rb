@@ -30,7 +30,8 @@ class Stop
 
     def all_arrivals(stop)
       url = "http://api.pugetsound.onebusaway.org/api/where/arrivals-and-departures-for-stop/#{stop_id(stop)}.json?key=#{ENV['OBA_KEY']}"
-      HTTParty.get(url)['data']['entry']['arrivalsAndDepartures']
+      results = HTTParty.get(url)
+      results['data']['entry']['arrivalsAndDepartures'] if results
     end
 
     def trip_by_route(arrivals, stop)
