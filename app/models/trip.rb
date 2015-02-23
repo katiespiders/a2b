@@ -58,7 +58,10 @@ class Trip
 			@best = itins[0]
 			itins.each do |itin|
 				itin_time = itin[:summary][:trip_time]
-				@best = itin if itin_time < @best[:summary][:trip_time]
+				best_time = @best[:summary][:trip_time]
+				if (itin_time < best_time && itin_time > 0) || best_time < 0 # workaround for midnight bug on line 73
+					@best = itin
+				end
 			end
 		end
 
