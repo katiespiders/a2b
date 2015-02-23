@@ -43,7 +43,6 @@ class Trip
 
 			legs.each_with_index do |leg_hash, i|
 				first_transit_index ||= i unless leg_hash['mode'] == 'WALK'
-
 				start_time = i == 0 ? Time.now.to_i + 5.minutes : dir_array.last.end_time
 				Rails.logger.debug "leg #{i} (#{leg_hash['mode']}) starts at #{Time.at(start_time).strftime("%-I:%M %P")}"
 
@@ -51,9 +50,6 @@ class Trip
 
 				dir_array << Leg.new(leg_hash, next_leg_hash, i == first_transit_index, start_time) unless leg_hash['interlineWithPreviousLeg']
 				last = dir_array.last
-				Rails.logger.info "added #{last}"
-				Rails.logger.info "a #{last.class}"
-				Rails.logger.info "ending at #{last.end_time}"
 				end
 			dir_array
 		end
