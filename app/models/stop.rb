@@ -17,7 +17,8 @@ class Stop
       @arrival_time = get_oba ? oba_time(stop) : next_scheduled_time(stop)
       @delta = delta(stop)
 
-      Rails.logger.info "#{Time.now - time} s: found bus at #{Time.at(@arrival_time)} #{@delta}"
+      info = "#{Time.now - time} s: "
+      info += @arrival_time ? "found bus at #{Time.at(@arrival_time)} #{@delta}" : "bus not found"
     end
   end
 
@@ -63,9 +64,11 @@ class Stop
       @realtime = false
       stop_data = stop_schedule(stop)
       route_schedule = route_stops(stop_data)
-      next_arrival = route_schedule.find { |stop| stop['arrivalTime']/1000 > @earliest_time }
-      next_arrival ||= route_schedule[0] # if none before midnight, gets first arrival of the day; bug when actual next day's schedule is different.
-      @scheduled_time = next_arrival['arrivalTime'] / 1000
+      if route_schedule
+        next_arrival = route_schedule.find { |stop| stop['arrivalTime']/1000 > @earliest_time }
+        next_arrival ||= route_schedule[0] # if none before midnight, gets first arrival of the day; bug when actual next day's schedule is different.
+        @scheduled_time = next_arrival['arrivalTime'] / 1000
+      end
     end
 
     def stop_schedule(stop)
@@ -85,26 +88,30 @@ class Stop
     def route_stops(stop_data)
       all_routes = stop_data['entry']['stopRouteSchedules']
       route_info = all_routes.find { |route| route['routeId'] == route_id(stop_data) }
-      route_stops = route_info['stopRouteDirectionSchedules'][0]['scheduleStopTimes']
-      route_stops.sort_by { |stop| stop['arrivalTime'] }
+      if route_info
+        route_stops = route_info['stopRouteDirectionSchedules'][0]['scheduleStopTimes']
+        route_stops.sort_by { |stop| stop['arrivalTime'] }
+      end
     end
 
     def route_id(stop_data)
       stop_routes = stop_data['references']['routes']
       route_reference = stop_routes.find { |route| route['shortName'] == @route.sub(/(\d+)[E]/, '\1') } # route names here do not include E for express
-      route_reference['id'] # schedule can be found only by id
+      route_reference['id'] if route_reference # schedule can be found only by id; BUG HERE
     end
 
     def delta(stop)
-      delay = @arrival_time - @scheduled_time
-      delay_string = if delay.abs < 60
-        @realtime ? 'on time' : 'supposedly'
-      elsif delay < 0
-        "#{delay.abs / 60} minutes early"
-      else
-        "#{delay / 60} minutes late"
-      end
+      if @arrival_time
+        delay = @arrival_time - @scheduled_time
+        delay_string = if delay.abs < 60
+          @realtime ? 'on time' : 'supposedly'
+        elsif delay < 0
+          "#{delay.abs / 60} minutes early"
+        else
+          "#{delay / 60} minutes late"
+        end
 
-      "(#{delay_string})"
+        "(#{delay_string})"
+      end
     end
 end

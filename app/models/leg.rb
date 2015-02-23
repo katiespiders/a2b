@@ -32,10 +32,14 @@ class Leg
         @alight = Stop.new(otp_hash['to'])
       end
 
-      @start_time = @board.arrival_time
-      @end_time = @start_time + @duration
-      @start_display = time_string(@start_time)
-      @end_display = time_string(@end_time)
+      if @start_time = @board.arrival_time
+        @end_time = @start_time + @duration
+        @start_display = time_string(@start_time)
+        @end_display = time_string(@end_time)
+      else
+        @start_time = Time.new(9999,12,31).to_i
+        @end_time = Time.new(9999,12,31).to_i # workaround for missing data in schedule
+      end
     end
 
     def time_string(time)
