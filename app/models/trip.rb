@@ -50,6 +50,10 @@ class Trip
 				next_leg_hash = legs[i+1] if i<legs.length-1
 
 				dir_array << Leg.new(leg_hash, next_leg_hash, i == first_transit_index, start_time) unless leg_hash['interlineWithPreviousLeg']
+				last = dir_array.last
+				Rails.logger.info "added #{last}"
+				Rails.logger.info "a #{last.class}"
+				Rails.logger.info "ending at #{last.end_time}"
 				end
 			dir_array
 		end
