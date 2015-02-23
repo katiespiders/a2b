@@ -43,6 +43,7 @@ class Trip
 
 			legs.each_with_index do |leg_hash, i|
 				first_transit_index ||= i unless leg_hash['mode'] == 'WALK'
+				Rails.logger.info "index #{i}, dir_array length #{dir_array.length}"
 				start_time = i == 0 ? Time.now.to_i + 5.minutes : dir_array[i-1].end_time
 				Rails.logger.debug "leg #{i} (#{leg_hash['mode']}) starts at #{Time.at(start_time).strftime("%-I:%M %P")}"
 
