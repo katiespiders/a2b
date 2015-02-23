@@ -33,17 +33,21 @@ class Stop
       results = HTTParty.get(url)
       data = results['data'] if results
       entry = data['entry'] if data
-      arrivals = entry['arrivalsAndDepartures'] if entry
+      entry['arrivalsAndDepartures'] if entry
     end
 
     def trip_by_route(arrivals, stop)
-      candidates = arrivals.select { |arrival| arrival['routeShortName'] == @route }
-      best = best_arrival(candidates)
-      if best
-        @trip_id = best['tripId']
-        @realtime = best['predicted']
-        @scheduled_time = best['scheduledArrivalTime'] / 1000 # milliseconds
-        realtime_arrival(best)
+      if arrivals
+        candidates = arrivals.select { |arrival| arrival['routeShortName'] == @route }
+        best = best_arrival(candidates)
+        if best
+          @trip_id = best['tripId']
+          @realtime = best['predicted']
+          @scheduled_time = best['scheduledArrivalTime'] / 1000 # milliseconds
+          realtime_arrival(best)
+        else
+          next_scheduled_time(stop)
+        end
       else
         next_scheduled_time(stop)
       end
